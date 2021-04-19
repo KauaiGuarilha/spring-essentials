@@ -1,65 +1,53 @@
 package com.example.springessentials.controller;
 
-import com.example.springessentials.model.entity.Student;
-import com.example.springessentials.model.exceptions.ResourceNotFoundException;
-import com.example.springessentials.model.repository.StudentRepository;
+import com.example.springessentials.model.dto.StudentDTO;
+import com.example.springessentials.model.parser.StudentParser;
+import com.example.springessentials.model.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("students")
 public class StudentController {
 
-    private final StudentRepository repository;
+    @Autowired private StudentParser parser;
+    @Autowired private StudentService service;
 
-    @Autowired
-    public StudentController(StudentRepository repository) {
-        this.repository = repository;
+    @PostMapping
+    @Transactional(rollbackFor = Exception.class)
+    public ResponseEntity<?> save(@Valid @RequestBody StudentDTO dto){
+        return new ResponseEntity<>(parser.dtoResponse(service.saveStudent(parser.toStudent(dto))), HttpStatus.CREATED);
     }
 
-    @GetMapping
-    public ResponseEntity<?> listAll(Pageable pageable){
-        return new ResponseEntity<>(repository.findAll(pageable), HttpStatus.OK);
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(@PathVariable String id, @RequestBody StudentDTO student){
+        return new ResponseEntity<>(parser.dtoResponse(service.updateStudent(id, parser.toStudent(student))), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getStudentuById(@PathVariable("id") String id){
-        verifyStudentExists(id);
-        Student student = repository.findByStudentId(UUID.fromString(id));
-        return new ResponseEntity<>(student, HttpStatus.OK);
+        return new ResponseEntity<>(parser.dtoResponse(service.studentuById(id)), HttpStatus.OK);
     }
 
     @GetMapping("/findByName/{name}")
     public ResponseEntity findStudentByName(@PathVariable String name){
-        return new ResponseEntity(repository.findByNameIgnoreCaseContaining(name), HttpStatus.OK);
+        return new ResponseEntity(service.studentByName(name), HttpStatus.OK);
     }
 
-    @PostMapping
-    public ResponseEntity<?> save(@Valid @RequestBody Student student){
-        return new ResponseEntity<>(repository.save(student), HttpStatus.CREATED);
+    @GetMapping
+    public ResponseEntity<?> listAll(Pageable pageable){
+        return new ResponseEntity<>(service.listAll(pageable), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable String id){
-        verifyStudentExists(id);
-        repository.deleteById(UUID.fromString(id));
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @PutMapping
-    public ResponseEntity<?> update(@RequestBody Student student){
-        verifyStudentExists(String.valueOf(student.getId()));
-        repository.save(student);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    private void verifyStudentExists(String id){
-        if (repository.findByStudentId(UUID.fromString(id)) == null) throw new ResourceNotFoundException("Student not found for UUID: " + id);
+    public ResponseEntity delete(@PathVariable String id){
+        service.delete(id);
+        return ResponseEntity.ok().build();
     }
 }

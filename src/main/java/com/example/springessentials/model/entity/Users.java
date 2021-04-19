@@ -15,8 +15,8 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "student")
-public class Student {
+@Table(name = "users")
+public class Users {
 
     @Id
     @GenericGenerator(name = "uuid-gen", strategy = "uuid2")
@@ -25,7 +25,10 @@ public class Student {
     @Column(columnDefinition = "uuid")
     private UUID id;
 
-    @Column private String name;
+    @Column(unique = true)
+    private String username;
 
-    @Column private String email;
+    @Column private String password;
+
+    @Column private String name;
 }

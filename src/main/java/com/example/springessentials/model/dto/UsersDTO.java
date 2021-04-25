@@ -1,12 +1,10 @@
 package com.example.springessentials.model.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import javax.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import javax.validation.constraints.NotEmpty;
 
 @Data
 @Builder
@@ -14,13 +12,11 @@ import javax.validation.constraints.NotEmpty;
 @NoArgsConstructor
 public class UsersDTO {
 
-    @NotEmpty
-    private String username;
+    @NotEmpty private String username;
 
-    @NotEmpty
-    @JsonIgnore
-    private String password;
+    @NotEmpty private String password;
 
-    @NotEmpty
-    private String name;
+    @NotEmpty private String name;
+
+    @NotEmpty private boolean admin;
 }

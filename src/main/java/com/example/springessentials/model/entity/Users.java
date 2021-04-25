@@ -1,14 +1,13 @@
 package com.example.springessentials.model.entity;
 
+import java.util.UUID;
+import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
-
-import javax.persistence.*;
-import java.util.UUID;
 
 @Entity
 @Data
@@ -31,4 +30,6 @@ public class Users {
     @Column private String password;
 
     @Column private String name;
+
+    @Column private boolean admin;
 }

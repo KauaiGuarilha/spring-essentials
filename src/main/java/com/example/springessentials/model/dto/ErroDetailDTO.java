@@ -1,6 +1,5 @@
 package com.example.springessentials.model.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -8,5 +7,4 @@ import lombok.experimental.SuperBuilder;
 @Data
 @SuperBuilder
 @NoArgsConstructor
-public class ErroDetailDTO extends ResourceNotFoundDetailsDTO{
-}
+public class ErroDetailDTO extends ResourceNotFoundDetailsDTO {}

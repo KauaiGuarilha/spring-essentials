@@ -1,12 +1,11 @@
 package com.example.springessentials.model.repository;
 
 import com.example.springessentials.model.entity.Student;
+import java.util.List;
+import java.util.UUID;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
-import java.util.UUID;
 
 @Repository
 public interface StudentRepository extends PagingAndSortingRepository<Student, UUID> {

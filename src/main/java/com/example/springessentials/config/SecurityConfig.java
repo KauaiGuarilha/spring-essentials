@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.cors.CorsConfiguration;
 
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -20,17 +21,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.cors()
+        http.cors().configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues())
                 .and()
-                .csrf()
-                .disable()
+                .csrf().disable()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.GET, SIGN_UP_URL)
-                .permitAll()
-                .antMatchers("/*/protected/**")
-                .hasRole("USER")
-                .antMatchers("/*/admin/**")
-                .hasRole("ADMIN")
+                .antMatchers(HttpMethod.GET, SIGN_UP_URL).permitAll()
+                .antMatchers("/*/protected/**").hasRole("USER")
+                .antMatchers("/*/admin/**").hasRole("ADMIN")
                 .and()
                 .addFilter(new JWTAuthenticationFilter(authenticationManager()))
                 .addFilter(new JWTAuthorizationFilter(authenticationManager(), service));

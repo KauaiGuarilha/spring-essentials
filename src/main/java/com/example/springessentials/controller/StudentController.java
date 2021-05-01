@@ -41,16 +41,19 @@ public class StudentController {
         return ResponseEntity.ok().build();
     }
 
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/protected/students/{id}")
     public ResponseEntity<?> getStudentuById(@PathVariable("id") String id) {
         return new ResponseEntity<>(parser.dtoResponse(service.studentuById(id)), HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/protected/students/findByName/{name}")
     public ResponseEntity findStudentByName(@PathVariable String name) {
         return new ResponseEntity(service.studentByName(name), HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/protected/students")
     public ResponseEntity<?> listAll(Pageable pageable) {
         return new ResponseEntity<>(service.listAll(pageable), HttpStatus.OK);

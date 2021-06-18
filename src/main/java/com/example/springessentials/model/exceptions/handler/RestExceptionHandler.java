@@ -1,11 +1,14 @@
 package com.example.springessentials.model.exceptions.handler;
 
-import com.example.springessentials.model.dto.ErroDetailDTO;
+import com.example.springessentials.model.domain.EValidation;
+import com.example.springessentials.model.dto.ErrorDTO;
 import com.example.springessentials.model.dto.ValidationErrorDetailsDTO;
 import com.example.springessentials.model.exceptions.ResourceNotFoundException;
-import java.util.Date;
+
 import java.util.List;
 import java.util.stream.Collectors;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -18,39 +21,34 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+@Slf4j
 @ControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<?> handlerResourceNotFoundException(
             ResourceNotFoundException resourceNotFoundException) {
-        ErroDetailDTO erroDetailDTO =
-                (ErroDetailDTO)
-                        ErroDetailDTO.builder()
-                                .timestamp(new Date().getTime())
-                                .status(HttpStatus.BAD_REQUEST.value())
-                                .title("Resource not found.")
-                                .detail(resourceNotFoundException.getMessage())
-                                .developerMessage(resourceNotFoundException.getClass().getName())
-                                .build();
 
-        return new ResponseEntity<>(erroDetailDTO, HttpStatus.BAD_REQUEST);
+        log.error("Resource Not Found", resourceNotFoundException);
+        ErrorDTO errorDTO = ErrorDTO.builder()
+                .code(EValidation.NOT_IDENTIFIED.getCode())
+                .message(resourceNotFoundException.getMessage())
+                .build();
+
+        return new ResponseEntity<>(errorDTO, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(PropertyReferenceException.class)
     public ResponseEntity<?> handlerPropertyReferenceException(
             PropertyReferenceException resourceNotFoundException) {
-        ErroDetailDTO erroDetailDTO =
-                (ErroDetailDTO)
-                        ErroDetailDTO.builder()
-                                .timestamp(new Date().getTime())
-                                .status(HttpStatus.BAD_REQUEST.value())
-                                .title("Resource not found.")
-                                .detail(resourceNotFoundException.getMessage())
-                                .developerMessage(resourceNotFoundException.getClass().getName())
-                                .build();
 
-        return new ResponseEntity<>(erroDetailDTO, HttpStatus.BAD_REQUEST);
+        log.error("Property Reference Error", resourceNotFoundException);
+        ErrorDTO errorDTO = ErrorDTO.builder()
+                .code(EValidation.NOT_IDENTIFIED.getCode())
+                .message(resourceNotFoundException.getMessage())
+                .build();
+
+        return new ResponseEntity<>(errorDTO, HttpStatus.BAD_REQUEST);
     }
 
     @Override
@@ -69,10 +67,10 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
                         .map(FieldError::getDefaultMessage)
                         .collect(Collectors.joining(", "));
 
-        ValidationErrorDetailsDTO validationErrorDetailsDTO =
-                ValidationErrorDetailsDTO.builder().campo(fields).mensagem(fieldMessage).build();
+        ErrorDTO errorDTO =
+                ErrorDTO.builder().field(fields).message(fieldMessage).build();
 
-        return new ResponseEntity<>(validationErrorDetailsDTO, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(errorDTO, HttpStatus.BAD_REQUEST);
     }
 
     @Override
@@ -83,16 +81,12 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
             HttpStatus status,
             WebRequest request) {
 
-        ErroDetailDTO erroDetailDTO =
-                (ErroDetailDTO)
-                        ErroDetailDTO.builder()
-                                .timestamp(new Date().getTime())
-                                .status(status.value())
-                                .title("Internal Exception.")
-                                .detail(ex.getMessage())
-                                .developerMessage(ex.getClass().getName())
-                                .build();
+        log.error("Generic error in request processing", ex);
+        ErrorDTO errorDTO = ErrorDTO.builder()
+                .code(EValidation.NOT_IDENTIFIED.getCode())
+                .message(ex.getMessage())
+                .build();
 
-        return new ResponseEntity<>(erroDetailDTO, headers, status);
+        return new ResponseEntity<>(errorDTO, headers, HttpStatus.BAD_REQUEST);
     }
 }

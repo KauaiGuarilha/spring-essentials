@@ -7,4 +7,9 @@ import lombok.experimental.SuperBuilder;
 @Data
 @SuperBuilder
 @NoArgsConstructor
-public class ErroDetailDTO extends ResourceNotFoundDetailsDTO {}
+public class ErrorDTO {
+
+    private Integer code;
+    private String message;
+    private String field;
+}

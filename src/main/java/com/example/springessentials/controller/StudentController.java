@@ -29,6 +29,7 @@ public class StudentController {
 
     @PutMapping("/admin/students")
     @PreAuthorize("hasRole('ADMIN')")
+    @Transactional(rollbackFor = Exception.class)
     public ResponseEntity<?> update(@Valid @RequestBody StudentDTO dto) {
         return new ResponseEntity<>(
                 parser.dtoResponse(service.saveUpdate(parser.toStudent(dto))), HttpStatus.OK);
@@ -43,7 +44,7 @@ public class StudentController {
 
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/protected/students/{id}")
-    public ResponseEntity<?> getStudentuById(@PathVariable("id") String id) {
+    public ResponseEntity<?> studentuById(@PathVariable("id") String id) {
         return new ResponseEntity<>(parser.dtoResponse(service.studentuById(id)), HttpStatus.OK);
     }
 

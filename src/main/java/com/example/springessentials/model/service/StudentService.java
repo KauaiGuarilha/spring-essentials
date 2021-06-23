@@ -1,5 +1,6 @@
 package com.example.springessentials.model.service;
 
+import com.example.springessentials.model.domain.EValidation;
 import com.example.springessentials.model.entity.Student;
 import com.example.springessentials.model.exceptions.ResourceNotFoundException;
 import com.example.springessentials.model.repository.StudentRepository;
@@ -9,11 +10,14 @@ import java.util.Optional;
 import java.util.UUID;
 
 import io.jsonwebtoken.JwtException;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class StudentService {
 
@@ -33,18 +37,31 @@ public class StudentService {
 
             return repository.save(db);
         } catch (Exception e) {
-            throw new ResourceNotFoundException("Student not found for UUID: " + student.getId());
+            log.error("There was a generic problem when trying to save or update the student.", ExceptionUtils.getStackTrace(e));
+            throw new ResourceNotFoundException(EValidation.NOT_IDENTIFIED.getDescription());
         }
     }
 
     public Page<Student> listAll(Pageable pageable) {
-        return repository.findAll(pageable);
+        try {
+            return repository.findAll(pageable);
+        } catch (Exception e){
+            log.error("There was a generic problem when trying to list all student.", ExceptionUtils.getStackTrace(e));
+            throw new ResourceNotFoundException(EValidation.NOT_IDENTIFIED.getDescription());
+        }
     }
 
     public Student studentuById(String id) {
-        verifyStudentExists(id);
-        Student student = repository.findByStudentId(UUID.fromString(id));
-        return student;
+        try {
+            verifyStudentExists(id);
+            Student student = repository.findByStudentId(UUID.fromString(id));
+            return student;
+        } catch (ResourceNotFoundException e){
+            throw e;
+        } catch (Exception e){
+            log.error("There was a generic problem when trying to return students by id.", ExceptionUtils.getStackTrace(e));
+            throw new ResourceNotFoundException(EValidation.NOT_IDENTIFIED.getDescription());
+        }
     }
 
     public List<Student> studentByName(String name) {
@@ -52,12 +69,18 @@ public class StudentService {
             List<Student> students = repository.findByNameIgnoreCaseContaining(name);
             return students;
         } catch (Exception e) {
-            throw new ResourceNotFoundException("Student not found for name: " + name);
+            log.error("There was a generic problem when trying to return students by name.", ExceptionUtils.getStackTrace(e));
+            throw new ResourceNotFoundException(EValidation.NOT_IDENTIFIED.getDescription());
         }
     }
 
     public void delete(String id) {
-        repository.deleteById(UUID.fromString(id));
+        try {
+            repository.deleteById(UUID.fromString(id));
+        } catch (Exception e){
+            log.error("There was a generic problem when trying to delete students by id.", ExceptionUtils.getStackTrace(e));
+            throw new ResourceNotFoundException(EValidation.NOT_IDENTIFIED.getDescription());
+        }
     }
 
     private void verifyStudentExists(String id) {

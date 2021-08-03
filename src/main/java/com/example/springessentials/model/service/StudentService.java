@@ -55,6 +55,9 @@ public class StudentService {
         try {
             verifyStudentExists(id);
             Student student = repository.findByStudentId(UUID.fromString(id));
+            if (Objects.isNull(student))
+                throw new ResourceNotFoundException("Student not found for ID");
+
             return student;
         } catch (ResourceNotFoundException e){
             throw e;
@@ -66,6 +69,9 @@ public class StudentService {
 
     public List<Student> studentByName(String name) {
         try {
+            if (Objects.isNull(name))
+                throw new ResourceNotFoundException("Student not found for name");
+
             List<Student> students = repository.findByNameIgnoreCaseContaining(name);
             return students;
         } catch (Exception e) {
@@ -76,6 +82,7 @@ public class StudentService {
 
     public void delete(String id) {
         try {
+            verifyStudentExists(id);
             repository.deleteById(UUID.fromString(id));
         } catch (Exception e){
             log.error("There was a generic problem when trying to delete students by id.", ExceptionUtils.getStackTrace(e));
@@ -84,7 +91,7 @@ public class StudentService {
     }
 
     private void verifyStudentExists(String id) {
-        if (repository.findByStudentId(UUID.fromString(id)) == null)
-            throw new ResourceNotFoundException("Student not found for UUID: " + id);
+        if (Objects.isNull(UUID.fromString(id)))
+            throw new ResourceNotFoundException("Student not found for UUID");
     }
 }

@@ -11,6 +11,7 @@ import java.util.UUID;
 
 import io.jsonwebtoken.JwtException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -69,7 +70,7 @@ public class StudentService {
 
     public List<Student> studentByName(String name) {
         try {
-            if (Objects.isNull(name))
+            if (StringUtils.isBlank(name))
                 throw new ResourceNotFoundException("Student not found for name");
 
             List<Student> students = repository.findByNameIgnoreCaseContaining(name);

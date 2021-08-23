@@ -48,9 +48,9 @@ public class FirebaseStorageService {
     public StudentFileDTOResponse uploadDatabase(
             String fName, String mimiType, MultipartFile file, String idRoom) throws IOException {
 
-        Optional<Student> room = studentRepository.findById(UUID.fromString(idRoom));
+        Optional<Student> student = studentRepository.findById(UUID.fromString(idRoom));
 
-        if (!room.isPresent()) throw new RuntimeException("Could not find any room.");
+        if (!student.isPresent()) throw new RuntimeException("Could not find any student.");
 
         Bucket bucket = StorageClient.getInstance().bucket();
         byte[] bytes = file.getBytes();
@@ -60,9 +60,9 @@ public class FirebaseStorageService {
         // URL public
         blob.createAcl(Acl.of(Acl.User.ofAllUsers(), Acl.Role.READER));
 
-        FileLoad roomImage =
+        FileLoad fileLoad =
                 FileLoad.builder()
-                        .student(room.get())
+                        .student(student.get())
                         .pathFile(
                                 String.format(
                                         initializationUtils.getStorageGoogleApis(),
@@ -70,7 +70,7 @@ public class FirebaseStorageService {
                                         fName))
                         .build();
 
-        fileLoadRepository.save(roomImage);
+        fileLoadRepository.save(fileLoad);
 
         return StudentFileDTOResponse.builder()
                 .base64(Base64.getEncoder().encodeToString(file.getBytes()))

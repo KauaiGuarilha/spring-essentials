@@ -41,10 +41,7 @@ public class StudentControllerTest {
 
     @Test
     @DisplayName("Should save student")
-    @WithMockUser(
-            username = "kauai",
-            password = "123",
-            roles = {"USER", "ADMIN"})
+    @WithMockUser(username = "kauai", password = "123", roles = {"USER", "ADMIN"})
     public void shouldSaveStudent() throws Exception {
         StudentDTO dto = StudentDTO.builder().name("kauai").email("kauai@kauai.com").build();
 
@@ -82,10 +79,7 @@ public class StudentControllerTest {
 
     @Test
     @DisplayName("Should update student")
-    @WithMockUser(
-            username = "kauai",
-            password = "123",
-            roles = {"USER", "ADMIN"})
+    @WithMockUser(username = "kauai", password = "123", roles = {"USER", "ADMIN"})
     public void shouldUpdateStudent() throws Exception {
         StudentDTO dto =
                 StudentDTO.builder()
@@ -124,10 +118,7 @@ public class StudentControllerTest {
 
     @Test
     @DisplayName("Should delete student")
-    @WithMockUser(
-            username = "kauai",
-            password = "123",
-            roles = {"USER", "ADMIN"})
+    @WithMockUser(username = "kauai", password = "123", roles = {"USER", "ADMIN"})
     public void shouldDeleteStudent() throws Exception {
         String id = "8e31518e-1558-48b0-9a06-5edfb772153f";
         doNothing().when(service).delete(id);

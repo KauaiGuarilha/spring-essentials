@@ -16,23 +16,20 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("v1")
 public class StudentController {
 
-    @Autowired private StudentParser parser;
     @Autowired private StudentService service;
 
     @PostMapping("/admin/students")
     @PreAuthorize("hasRole('ADMIN')")
     @Transactional(rollbackFor = Exception.class)
     public ResponseEntity<?> save(@Valid @RequestBody StudentDTO dto) {
-        return new ResponseEntity<>(
-                parser.dtoResponse(service.saveUpdate(parser.toStudent(dto))), HttpStatus.CREATED);
+        return new ResponseEntity<>(service.saveUpdate(dto), HttpStatus.CREATED);
     }
 
     @PutMapping("/admin/students")
     @PreAuthorize("hasRole('ADMIN')")
     @Transactional(rollbackFor = Exception.class)
     public ResponseEntity<?> update(@Valid @RequestBody StudentDTO dto) {
-        return new ResponseEntity<>(
-                parser.dtoResponse(service.saveUpdate(parser.toStudent(dto))), HttpStatus.OK);
+        return new ResponseEntity<>(service.saveUpdate(dto), HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -45,7 +42,7 @@ public class StudentController {
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/protected/students/{id}")
     public ResponseEntity<?> studentuById(@PathVariable("id") String id) {
-        return new ResponseEntity<>(parser.dtoResponse(service.studentuById(id)), HttpStatus.OK);
+        return new ResponseEntity<>(service.studentuById(id), HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('USER')")

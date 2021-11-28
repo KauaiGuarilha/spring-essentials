@@ -1,8 +1,11 @@
 package com.example.springessentialssenders.model.service;
 
+import com.example.springessentialssenders.model.builder.StudentParser;
 import com.example.springessentialssenders.model.domain.EValidation;
+import com.example.springessentialssenders.model.dto.StudentDTO;
 import com.example.springessentialssenders.model.entity.Student;
 import com.example.springessentialssenders.model.exceptions.ResourceNotFoundException;
+import com.example.springessentialssenders.model.queue.senders.QueueStudentSender;
 import com.example.springessentialssenders.model.repository.StudentRepository;
 import java.util.List;
 import java.util.Objects;
@@ -21,26 +24,35 @@ import org.springframework.stereotype.Service;
 @Service
 public class StudentService {
 
+    @Autowired private StudentParser parser;
     @Autowired private StudentRepository repository;
+    @Autowired private QueueStudentSender queueStudentSender;
 
-    public Student saveUpdate(Student student) {
+    public StudentDTO saveUpdate(StudentDTO studentDTO) {
         try {
-            if (Objects.isNull(student.getId())) return repository.save(student);
+            if (Objects.isNull(studentDTO.getId())) return sendForQueueAndSaveStudent(studentDTO);
 
+            Student student = parser.toStudent(studentDTO);
             Optional<Student> optional = repository.findById(student.getId());
 
             Student db = new Student();
             if (optional.isPresent()) db = optional.get();
 
-            db.setName(student.getName());
-            db.setEmail(student.getEmail());
+            db.setName(studentDTO.getName());
+            db.setEmail(studentDTO.getEmail());
 
-            return repository.save(db);
+            return sendForQueueAndSaveStudent(parser.dtoResponse(db));
         } catch (Exception e) {
             log.error("There was a generic problem when trying to save or update the student.", ExceptionUtils.getStackTrace(e));
             throw new ResourceNotFoundException(EValidation.NOT_IDENTIFIED.getDescription());
         }
     }
+
+    private StudentDTO sendForQueueAndSaveStudent(StudentDTO studentDTO){
+        queueStudentSender.sendMessage(studentDTO);
+        return parser.dtoResponse(repository.save(parser.toStudent(studentDTO)));
+    }
+
 
     public Page<Student> listAll(Pageable pageable) {
         try {
@@ -51,14 +63,14 @@ public class StudentService {
         }
     }
 
-    public Student studentuById(String id) {
+    public StudentDTO studentuById(String id) {
         try {
             verifyStudentExists(id);
             Student student = repository.findByStudentId(UUID.fromString(id));
             if (Objects.isNull(student))
                 throw new ResourceNotFoundException("Student not found for ID");
 
-            return student;
+            return parser.dtoResponse(student);
         } catch (ResourceNotFoundException e){
             throw e;
         } catch (Exception e){

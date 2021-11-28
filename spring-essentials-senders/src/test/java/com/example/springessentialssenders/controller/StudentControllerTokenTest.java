@@ -39,7 +39,6 @@ public class StudentControllerTokenTest {
     private HttpEntity<Void> wrongHeader;
 
     @MockBean private StudentService service;
-    @MockBean private StudentParser parser;
 
     @BeforeEach
     public void configProtectedHeaders() throws Exception {
@@ -65,14 +64,7 @@ public class StudentControllerTokenTest {
     @Test
     @DisplayName("Should save student")
     public void shouldSaveStudent() throws Exception {
-        StudentDTO dto = StudentDTO.builder().name("kauai").email("kauai@kauai.com").build();
-
-        Student student =
-                Student.builder()
-                        .id(UUID.fromString("8e31518e-1558-48b0-9a06-5edfb772153f"))
-                        .name("kauai")
-                        .email("kauai@kauai.com")
-                        .build();
+        StudentDTO studentDTO = StudentDTO.builder().name("kauai").email("kauai@kauai.com").build();
 
         StudentDTO response =
                 StudentDTO.builder()
@@ -81,36 +73,25 @@ public class StudentControllerTokenTest {
                         .email("kauai@kauai.com")
                         .build();
 
-        doReturn(student).when(parser).toStudent(dto);
-        doReturn(student).when(service).saveUpdate(student);
-        doReturn(response).when(parser).dtoResponse(student);
+        doReturn(response).when(service).saveUpdate(studentDTO);
 
         String token = adminHeader.getHeaders().get("Authorization").get(0);
         mockMvc.perform(
                         post("/v1/admin/students").header("Authorization", token)
-                                .content(EssentialsObjectMapper.asJsonString(dto))
+                                .content(EssentialsObjectMapper.asJsonString(studentDTO))
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value("8e31518e-1558-48b0-9a06-5edfb772153f"))
+                .andExpect(jsonPath("$.id").value(response.getId()))
                 .andExpect(jsonPath("$.name").value(response.getName()))
                 .andExpect(jsonPath("$.email").value(response.getEmail()));
 
-        verify(parser, times(1)).toStudent(dto);
-        verify(service, times(1)).saveUpdate(student);
-        verify(parser, times(1)).dtoResponse(student);
+        verify(service, times(1)).saveUpdate(studentDTO);
     }
 
     @Test
     @DisplayName("Should not save student")
     public void shouldNotSaveStudent() throws Exception {
-        StudentDTO dto = StudentDTO.builder().name("kauai").email("kauai@kauai.com").build();
-
-        Student student =
-                Student.builder()
-                        .id(UUID.fromString("8e31518e-1558-48b0-9a06-5edfb772153f"))
-                        .name("kauai")
-                        .email("kauai@kauai.com")
-                        .build();
+        StudentDTO studentDTO = StudentDTO.builder().name("kauai").email("kauai@kauai.com").build();
 
         StudentDTO response =
                 StudentDTO.builder()
@@ -119,14 +100,12 @@ public class StudentControllerTokenTest {
                         .email("kauai@kauai.com")
                         .build();
 
-        doReturn(student).when(parser).toStudent(dto);
-        doReturn(student).when(service).saveUpdate(student);
-        doReturn(response).when(parser).dtoResponse(student);
+        doReturn(studentDTO).when(service).saveUpdate(null);
 
         String token = protectedHeader.getHeaders().get("Authorization").get(0);
         mockMvc.perform(
                 post("/v1/admin/students").header("Authorization", token)
-                        .content(EssentialsObjectMapper.asJsonString(dto))
+                        .content(EssentialsObjectMapper.asJsonString(response))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isForbidden());
     }
@@ -134,70 +113,56 @@ public class StudentControllerTokenTest {
     @Test
     @DisplayName("Should update student")
     public void shouldUpdateStudent() throws Exception {
-        StudentDTO dto =
+        StudentDTO studentDTO =
                 StudentDTO.builder()
                         .id("8e31518e-1558-48b0-9a06-5edfb772153f")
                         .name("kauai")
                         .email("kauai@kauai.com")
                         .build();
 
-        Student student =
-                Student.builder()
-                        .id(UUID.fromString(dto.getId()))
-                        .name("kauai")
-                        .email("kauai@kauai.com")
-                        .build();
+        StudentDTO response = StudentDTO.builder()
+                .id("8e31518e-1558-48b0-9a06-5edfb772153f")
+                .name("kauai")
+                .email("kauai@kauai.com")
+                .build();
 
-        StudentDTO response =
-                StudentDTO.builder().id(dto.getId()).name("kauai").email("kauai@kauai.com").build();
-
-        doReturn(student).when(parser).toStudent(dto);
-        doReturn(student).when(service).saveUpdate(student);
-        doReturn(response).when(parser).dtoResponse(student);
+        doReturn(response).when(service).saveUpdate(studentDTO);
 
         String token = adminHeader.getHeaders().get("Authorization").get(0);
         mockMvc.perform(
                         put("/v1/admin/students/").header("Authorization", token)
-                                .content(EssentialsObjectMapper.asJsonString(dto))
+                                .content(EssentialsObjectMapper.asJsonString(studentDTO))
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value("8e31518e-1558-48b0-9a06-5edfb772153f"))
+                .andExpect(jsonPath("$.id").value(response.getId()))
                 .andExpect(jsonPath("$.name").value(response.getName()))
                 .andExpect(jsonPath("$.email").value(response.getEmail()));
 
-        verify(parser, times(1)).toStudent(dto);
-        verify(service, times(1)).saveUpdate(student);
-        verify(parser, times(1)).dtoResponse(student);
+        verify(service, times(1)).saveUpdate(studentDTO);
     }
 
     @Test
     @DisplayName("Should not update student")
     public void shouldNotUpdateStudent() throws Exception {
-        StudentDTO dto =
+        StudentDTO studentDTO =
                 StudentDTO.builder()
                         .id("8e31518e-1558-48b0-9a06-5edfb772153f")
                         .name("kauai")
                         .email("kauai@kauai.com")
                         .build();
 
-        Student student =
-                Student.builder()
-                        .id(UUID.fromString(dto.getId()))
-                        .name("kauai")
-                        .email("kauai@kauai.com")
-                        .build();
+        StudentDTO response = StudentDTO.builder()
+                .id("8e31518e-1558-48b0-9a06-5edfb772153f")
+                .name("kauai")
+                .email("kauai@kauai.com")
+                .build();
 
-        StudentDTO response =
-                StudentDTO.builder().id(dto.getId()).name("kauai").email("kauai@kauai.com").build();
-
-        doReturn(student).when(parser).toStudent(dto);
-        doReturn(student).when(service).saveUpdate(student);
-        doReturn(response).when(parser).dtoResponse(student);
+        doReturn(response).when(service).saveUpdate(studentDTO);
 
         String token = protectedHeader.getHeaders().get("Authorization").get(0);
         mockMvc.perform(
                 put("/v1/admin/students/").header("Authorization", token)
-                        .content(EssentialsObjectMapper.asJsonString(dto))
+                        .content(EssentialsObjectMapper.asJsonString(studentDTO))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isForbidden());
     }
@@ -231,28 +196,22 @@ public class StudentControllerTokenTest {
     public void shouldReturnStudentByID() throws Exception {
         String id = "8e31518e-1558-48b0-9a06-5edfb772153f";
 
-        StudentDTO response =
-                StudentDTO.builder().id(id).name("kauai").email("kauai@kauai.com").build();
+        StudentDTO response = StudentDTO.builder()
+                .id(id)
+                .name("kauai")
+                .email("kauai@kauai.com")
+                .build();
 
-        Student student =
-                Student.builder()
-                        .id(UUID.fromString(id))
-                        .name("kauai")
-                        .email("kauai@kauai.com")
-                        .build();
-
-        doReturn(student).when(service).studentuById(id);
-        doReturn(response).when(parser).dtoResponse(student);
+        doReturn(response).when(service).studentuById(id);
 
         String token = protectedHeader.getHeaders().get("Authorization").get(0);
         mockMvc.perform(get("/v1/protected/students/" + id).header("Authorization", token))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value("8e31518e-1558-48b0-9a06-5edfb772153f"))
+                .andExpect(jsonPath("$.id").value(response.getId()))
                 .andExpect(jsonPath("$.name").value(response.getName()))
                 .andExpect(jsonPath("$.email").value(response.getEmail()));
 
         verify(service, times(1)).studentuById(id);
-        verify(parser, times(1)).dtoResponse(student);
     }
 
     @Test
@@ -260,13 +219,6 @@ public class StudentControllerTokenTest {
     public void shouldReturnStudentByName() throws Exception {
         String name = "kauai";
         List<Student> students = new ArrayList<>();
-
-        StudentDTO response =
-                StudentDTO.builder()
-                        .id("8e31518e-1558-48b0-9a06-5edfb772153f")
-                        .name(name)
-                        .email("kauai@kauai.com")
-                        .build();
 
         Student student =
                 Student.builder()
@@ -278,13 +230,11 @@ public class StudentControllerTokenTest {
         students.add(student);
 
         doReturn(students).when(service).studentByName(name);
-        doReturn(response).when(parser).dtoResponse(student);
 
         String token = protectedHeader.getHeaders().get("Authorization").get(0);
         mockMvc.perform(get("/v1/protected/students/findByName/" + name).header("Authorization", token))
                 .andExpect(status().isOk());
 
         verify(service, times(1)).studentByName(name);
-        verify(parser, times(0)).dtoResponse(student);
     }
 }

@@ -3,10 +3,14 @@ package com.example.springessentialssenders.model.service;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import com.example.springessentialssenders.model.builder.StudentParser;
+import com.example.springessentialssenders.model.dto.StudentDTO;
 import com.example.springessentialssenders.model.entity.Student;
 import com.example.springessentialssenders.model.exceptions.ResourceNotFoundException;
+import com.example.springessentialssenders.model.queue.senders.QueueStudentSender;
 import com.example.springessentialssenders.model.repository.StudentRepository;
 import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -21,19 +25,26 @@ import java.util.UUID;
 @SpringBootTest
 public class StudentServiceTest {
 
+    @Mock private StudentParser parser;
     @Mock private StudentRepository repository;
+    @Mock private QueueStudentSender queueStudentSender;
 
     @InjectMocks StudentService service;
 
     @Test
     @DisplayName("Should save student.")
-    public void shouldSaveStudent() throws Exception {
-        Student studentRequest =
-                Student.builder()
-                        .id(null)
-                        .name("kauai")
-                        .email("kauai@kauai.com")
-                        .build();
+    public void shouldSaveStudent() {
+        StudentDTO studentDTO = StudentDTO.builder()
+                .id(null)
+                .name("kauai")
+                .email("kauai@kauai.com")
+                .build();
+
+        StudentDTO studentDTOFinal = StudentDTO.builder()
+                .id("8e31518e-1558-48b0-9a06-5edfb772153f")
+                .name("kauai")
+                .email("kauai@kauai.com")
+                .build();
 
         Student student = Student.builder()
                 .id(UUID.fromString("8e31518e-1558-48b0-9a06-5edfb772153f"))
@@ -41,15 +52,21 @@ public class StudentServiceTest {
                 .email("kauai@kauai.com")
                 .build();
 
-        doReturn(student).when(repository).save(studentRequest);
+        doNothing().when(queueStudentSender).sendMessage(studentDTO);
+        doReturn(student).when(parser).toStudent(studentDTO);
+        doReturn(student).when(repository).save(student);
+        doReturn(studentDTOFinal).when(parser).dtoResponse(student);
 
-        Student studentResponse = service.saveUpdate(studentRequest);
+        StudentDTO studentDTOResponse = service.saveUpdate(studentDTO);
 
-        Assert.assertEquals(studentResponse.getId(), UUID.fromString("8e31518e-1558-48b0-9a06-5edfb772153f"));
-        Assert.assertEquals(studentResponse.getName(), studentRequest.getName());
-        Assert.assertEquals(studentResponse.getEmail(), studentRequest.getEmail());
+        assertEquals(studentDTOResponse.getId(), studentDTOFinal.getId());
+        assertEquals(studentDTOResponse.getName(), studentDTOFinal.getName());
+        assertEquals(studentDTOResponse.getEmail(), studentDTOFinal.getEmail());
 
-        verify(repository, times(1)).save(studentRequest);
+        verify(queueStudentSender, times(1)).sendMessage(studentDTO);
+        verify(parser, times(1)).toStudent(studentDTO);
+        verify(repository, times(1)).save(student);
+        verify(parser, times(1)).dtoResponse(student);
     }
 
     @Test
@@ -73,7 +90,7 @@ public class StudentServiceTest {
         doReturn(null).when(repository).findById(studentRequest.getId());
 
         ResourceNotFoundException thrown =
-                assertThrows(ResourceNotFoundException.class, () -> service.saveUpdate(studentRequest));
+                assertThrows(ResourceNotFoundException.class, () -> service.saveUpdate(null));
 
         assertEquals(thrown.getClass(), ResourceNotFoundException.class);
         assertEquals(thrown.getDescription(), "An unidentified problem has occurred.");
@@ -81,32 +98,48 @@ public class StudentServiceTest {
 
     @Test
     @DisplayName("Should update student.")
-    public void shouldUpdateStudent() throws Exception {
-        Student studentRequest = Student.builder()
-                .id(UUID.fromString("8e31518e-1558-48b0-9a06-5edfb772153f"))
-                .name("kauai12")
+    public void shouldUpdateStudent() {
+        StudentDTO studentDTO = StudentDTO.builder()
+                .id("8e31518e-1558-48b0-9a06-5edfb772153f")
+                .name("kauai")
                 .email("kauai@kauai.com")
                 .build();
 
-        doReturn(Optional.of(studentRequest)).when(repository).findById(studentRequest.getId());
-        doReturn(studentRequest).when(repository).save(studentRequest);
+        Student student = Student.builder()
+                .id(UUID.fromString("8e31518e-1558-48b0-9a06-5edfb772153f"))
+                .name("kauai")
+                .email("kauai@kauai.com")
+                .build();
 
-        Student studentResponse = service.saveUpdate(studentRequest);
+        doReturn(student).when(parser).toStudent(studentDTO);
+        doReturn(Optional.of(student)).when(repository).findById(UUID.fromString(studentDTO.getId()));
+        doReturn(studentDTO).when(parser).dtoResponse(student);
+        doNothing().when(queueStudentSender).sendMessage(studentDTO);
+        doReturn(student).when(parser).toStudent(studentDTO);
+        doReturn(student).when(repository).save(student);
+        doReturn(studentDTO).when(parser).dtoResponse(student);
 
-        Assert.assertEquals(studentResponse.getId(), studentRequest.getId());
-        Assert.assertEquals(studentResponse.getName(), studentRequest.getName());
-        Assert.assertEquals(studentResponse.getEmail(), studentRequest.getEmail());
+        StudentDTO studentResponse = service.saveUpdate(studentDTO);
 
-        verify(repository, times(1)).findById(studentRequest.getId());
-        verify(repository, times(1)).save(studentRequest);
+        assertEquals(studentResponse.getId(), studentDTO.getId());
+        assertEquals(studentResponse.getName(), studentDTO.getName());
+        assertEquals(studentResponse.getEmail(), studentDTO.getEmail());
+
+        verify(parser, times(2)).toStudent(studentDTO);
+        verify(repository, times(1)).findById(UUID.fromString(studentDTO.getId()));
+        verify(parser, times(2)).dtoResponse(student);
+        verify(queueStudentSender, times(1)).sendMessage(studentDTO);
+        verify(parser, times(2)).toStudent(studentDTO);
+        verify(repository, times(1)).save(student);
+        verify(parser, times(2)).dtoResponse(student);
     }
 
     @Test
     @DisplayName("Should return student by id.")
     public void shouldReturnStudentById() throws Exception {
-        Student studentRequest = Student.builder()
-                .id(UUID.fromString("8e31518e-1558-48b0-9a06-5edfb772153f"))
-                .name("kauai12")
+        StudentDTO studentDTO = StudentDTO.builder()
+                .id("8e31518e-1558-48b0-9a06-5edfb772153f")
+                .name("kauai")
                 .email("kauai@kauai.com")
                 .build();
 
@@ -116,15 +149,17 @@ public class StudentServiceTest {
                 .email("kauai@kauai.com")
                 .build();
 
-        doReturn(student).when(repository).findByStudentId(studentRequest.getId());
+        doReturn(student).when(repository).findByStudentId(UUID.fromString(studentDTO.getId()));
+        doReturn(studentDTO).when(parser).dtoResponse(student);
 
-        Student studentResponse = service.studentuById(studentRequest.getId().toString());
+        StudentDTO studentDTOResponse = service.studentuById(studentDTO.getId());
 
-        Assert.assertEquals(studentResponse.getId(), studentRequest.getId());
-        Assert.assertEquals(studentResponse.getName(), studentRequest.getName());
-        Assert.assertEquals(studentResponse.getEmail(), studentRequest.getEmail());
+        assertEquals(studentDTOResponse.getId(), studentDTO.getId());
+        assertEquals(studentDTOResponse.getName(), studentDTO.getName());
+        assertEquals(studentDTOResponse.getEmail(), studentDTO.getEmail());
 
-        verify(repository, times(1)).findByStudentId(studentRequest.getId());
+        verify(repository, times(1)).findByStudentId(UUID.fromString(studentDTO.getId()));
+        verify(parser, times(1)).dtoResponse(student);
     }
 
     @Test

@@ -1,6 +1,5 @@
 package com.example.springessentialssenders.model.dto;
 
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,14 +10,19 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class StudentDTO {
+public class UserDTO {
 
     private String id;
+
+    @NotEmpty(message = "The username field is required")
+    private String username;
+
+    @NotEmpty(message = "The password field is required")
+    private String password;
 
     @NotEmpty(message = "The name field is required")
     private String name;
 
-    @Email
-    @NotEmpty(message = "The email field is required")
-    private String email;
+    @NotEmpty(message = "The admin option is required")
+    private boolean admin;
 }

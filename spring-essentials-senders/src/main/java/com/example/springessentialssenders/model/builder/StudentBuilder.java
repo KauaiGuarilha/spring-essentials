@@ -7,7 +7,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Component;
 
 @Component
-public class StudentParser {
+public class StudentBuilder {
 
     public Student toStudent(StudentDTO dto) {
         return Student.builder()

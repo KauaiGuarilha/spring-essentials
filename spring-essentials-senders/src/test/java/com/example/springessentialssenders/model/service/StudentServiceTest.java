@@ -3,14 +3,13 @@ package com.example.springessentialssenders.model.service;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import com.example.springessentialssenders.model.builder.StudentParser;
+import com.example.springessentialssenders.model.builder.StudentBuilder;
 import com.example.springessentialssenders.model.dto.StudentDTO;
 import com.example.springessentialssenders.model.entity.Student;
 import com.example.springessentialssenders.model.exceptions.ResourceNotFoundException;
 import com.example.springessentialssenders.model.queue.senders.QueueStudentSender;
 import com.example.springessentialssenders.model.repository.StudentRepository;
 import org.junit.Assert;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -25,7 +24,7 @@ import java.util.UUID;
 @SpringBootTest
 public class StudentServiceTest {
 
-    @Mock private StudentParser parser;
+    @Mock private StudentBuilder parser;
     @Mock private StudentRepository repository;
     @Mock private QueueStudentSender queueStudentSender;
 

@@ -1,4 +1,4 @@
-package com.example.springessentialssenders.model.builder;
+package com.example.springessentialssenders.model.parser;
 
 import com.example.springessentialssenders.model.dto.StudentDTO;
 import com.example.springessentialssenders.model.entity.Student;
@@ -7,7 +7,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Component;
 
 @Component
-public class StudentBuilder {
+public class StudentParser {
 
     public Student toStudent(StudentDTO dto) {
         return Student.builder()

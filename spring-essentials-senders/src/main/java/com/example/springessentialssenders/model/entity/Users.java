@@ -31,5 +31,5 @@ public class Users {
 
     @Column private String name;
 
-    @Column private boolean admin;
+    @Column private Integer admin;
 }

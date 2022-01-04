@@ -1,6 +1,8 @@
 package com.example.springessentialssenders.model.service;
 
-import com.example.springessentialssenders.model.builder.UsersBuilder;
+import com.example.springessentialssenders.model.dto.UserDTOResponse;
+import com.example.springessentialssenders.model.exceptions.UsernameAlreadyInUseException;
+import com.example.springessentialssenders.model.parser.UsersParser;
 import com.example.springessentialssenders.model.domain.EValidation;
 import com.example.springessentialssenders.model.dto.UserDTO;
 import com.example.springessentialssenders.model.entity.Users;
@@ -22,14 +24,14 @@ import java.util.UUID;
 @Service
 public class UserService {
 
-    @Autowired private UsersBuilder builder;
+    @Autowired private UsersParser parser;
     @Autowired private UsersReporitory repository;
 
-    public UserDTO saveUpdate(UserDTO userDTO){
-        try{
+    public UserDTOResponse saveUpdate(UserDTO userDTO){
+        try {
             if (Objects.isNull(userDTO.getId())) return saveUser(userDTO);
 
-            Users user = builder.toUsers(userDTO);
+            Users user = parser.toUsers(userDTO);
             Optional<Users> optional = repository.findById(user.getId());
 
             Users db = new Users();
@@ -37,18 +39,22 @@ public class UserService {
 
             db.setName(userDTO.getName());
             db.setPassword(cryptPassword(userDTO.getPassword()));
-            db.setAdmin(userDTO.isAdmin());
+            db.setAdmin(userDTO.getAdmin());
 
-            return builder.toResponse(db);
+            return parser.toResponse(db);
+        } catch (UsernameAlreadyInUseException e){
+            throw e;
         } catch (Exception e){
             log.error("There was a generic problem when trying to save or update the user.", ExceptionUtils.getStackTrace(e));
             throw new ResourceNotFoundException(EValidation.NOT_IDENTIFIED.getDescription());
         }
     }
 
-    private UserDTO saveUser(UserDTO userDTO){
+    private UserDTOResponse saveUser(UserDTO userDTO){
+        verifyUsername(userDTO);
+
         userDTO.setPassword(cryptPassword(userDTO.getPassword()));
-        return builder.toResponse(repository.save(builder.toUsers(userDTO)));
+        return parser.toResponse(repository.save(parser.toUsers(userDTO)));
     }
 
     private String cryptPassword(String password){
@@ -56,14 +62,23 @@ public class UserService {
         return passwordEncoder.encode(password);
     }
 
-    public UserDTO userById(String id){
+    private void verifyUsername(UserDTO userDTO){
+        Users user = repository.findByUsername(userDTO.getUsername());
+
+        if (Objects.isNull(user)) return;
+
+        if (user.getUsername().equals(userDTO.getUsername()))
+            throw new UsernameAlreadyInUseException(EValidation.USERNAME_ALREADY_USING.getDescription());
+    }
+
+    public UserDTOResponse userById(String id){
         try{
             verifyUserExists(id);
             Users user = repository.findByUserId(UUID.fromString(id));
             if (Objects.isNull(user))
                 throw new ResourceNotFoundException("User not found for ID");
 
-            return builder.toResponse(user);
+            return parser.toResponse(user);
         } catch (Exception e){
             log.error("There was a generic problem when trying to return user by id.", ExceptionUtils.getStackTrace(e));
             throw new ResourceNotFoundException(EValidation.NOT_IDENTIFIED.getDescription());

@@ -1,6 +1,6 @@
 package com.example.springessentialssenders.model.service;
 
-import com.example.springessentialssenders.model.builder.StudentBuilder;
+import com.example.springessentialssenders.model.parser.StudentParser;
 import com.example.springessentialssenders.model.domain.EValidation;
 import com.example.springessentialssenders.model.dto.StudentDTO;
 import com.example.springessentialssenders.model.entity.Student;
@@ -24,7 +24,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class StudentService {
 
-    @Autowired private StudentBuilder builder;
+    @Autowired private StudentParser parser;
     @Autowired private StudentRepository repository;
     @Autowired private QueueStudentSender queueStudentSender;
 
@@ -32,7 +32,7 @@ public class StudentService {
         try {
             if (Objects.isNull(studentDTO.getId())) return sendForQueueAndSaveStudent(studentDTO);
 
-            Student student = builder.toStudent(studentDTO);
+            Student student = parser.toStudent(studentDTO);
             Optional<Student> optional = repository.findById(student.getId());
 
             Student db = new Student();
@@ -41,7 +41,7 @@ public class StudentService {
             db.setName(studentDTO.getName());
             db.setEmail(studentDTO.getEmail());
 
-            return sendForQueueAndSaveStudent(builder.dtoResponse(db));
+            return sendForQueueAndSaveStudent(parser.dtoResponse(db));
         } catch (Exception e) {
             log.error("There was a generic problem when trying to save or update the student.", ExceptionUtils.getStackTrace(e));
             throw new ResourceNotFoundException(EValidation.NOT_IDENTIFIED.getDescription());
@@ -50,7 +50,7 @@ public class StudentService {
 
     private StudentDTO sendForQueueAndSaveStudent(StudentDTO studentDTO){
         queueStudentSender.sendMessage(studentDTO);
-        return builder.dtoResponse(repository.save(builder.toStudent(studentDTO)));
+        return parser.dtoResponse(repository.save(parser.toStudent(studentDTO)));
     }
 
 
@@ -70,7 +70,7 @@ public class StudentService {
             if (Objects.isNull(student))
                 throw new ResourceNotFoundException("Student not found for ID");
 
-            return builder.dtoResponse(student);
+            return parser.dtoResponse(student);
         } catch (ResourceNotFoundException e){
             throw e;
         } catch (Exception e){

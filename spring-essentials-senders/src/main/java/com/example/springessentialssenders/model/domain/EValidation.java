@@ -6,6 +6,7 @@ import lombok.Getter;
 @Getter
 public enum EValidation implements IEnumLabel<EValidation> {
 
+    USERNAME_ALREADY_USING(1),
     NOT_IDENTIFIED(-999);
 
     private final Integer code;

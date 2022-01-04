@@ -1,6 +1,11 @@
 package com.example.springessentialssenders.model.dto;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
+import com.example.springessentialssenders.model.domain.ERole;
+import com.example.springessentialssenders.validators.ValueEnumInteger;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,6 +28,7 @@ public class UserDTO {
     @NotEmpty(message = "The name field is required")
     private String name;
 
-    @NotEmpty(message = "The admin option is required")
-    private boolean admin;
+    @ValueEnumInteger(classeEnum = ERole.class)
+    @NotNull(message = "The admin option is required")
+    private Integer admin;
 }

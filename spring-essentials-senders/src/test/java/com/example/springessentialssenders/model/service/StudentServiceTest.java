@@ -3,7 +3,7 @@ package com.example.springessentialssenders.model.service;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import com.example.springessentialssenders.model.builder.StudentBuilder;
+import com.example.springessentialssenders.model.parser.StudentParser;
 import com.example.springessentialssenders.model.dto.StudentDTO;
 import com.example.springessentialssenders.model.entity.Student;
 import com.example.springessentialssenders.model.exceptions.ResourceNotFoundException;
@@ -24,7 +24,7 @@ import java.util.UUID;
 @SpringBootTest
 public class StudentServiceTest {
 
-    @Mock private StudentBuilder parser;
+    @Mock private StudentParser parser;
     @Mock private StudentRepository repository;
     @Mock private QueueStudentSender queueStudentSender;
 

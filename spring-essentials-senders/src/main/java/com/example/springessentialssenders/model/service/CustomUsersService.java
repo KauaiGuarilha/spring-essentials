@@ -1,5 +1,6 @@
 package com.example.springessentialssenders.model.service;
 
+import com.example.springessentialssenders.model.domain.ERole;
 import com.example.springessentialssenders.model.domain.EValidation;
 import com.example.springessentialssenders.model.entity.Users;
 import com.example.springessentialssenders.model.exceptions.EssentialsRuntimeException;
@@ -37,7 +38,9 @@ public class CustomUsersService implements UserDetailsService {
             return new User(
                     users.getUsername(),
                     users.getPassword(),
-                    users.isAdmin() ? authorityListAdmin : authorityListUser);
+                    users.getAdmin().equals(ERole.ADMIN.getCodeRole())
+                            ? authorityListAdmin
+                            : authorityListUser);
         } catch (Exception e){
             log.error("There was a generic problem when trying to load the user by Username", ExceptionUtils.getStackTrace(e));
             throw new EssentialsRuntimeException(EValidation.NOT_IDENTIFIED.getDescription());

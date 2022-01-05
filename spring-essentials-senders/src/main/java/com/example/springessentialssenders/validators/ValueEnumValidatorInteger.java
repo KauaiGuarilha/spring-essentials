@@ -8,7 +8,7 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 
-public class ValorEnumValidadorInteger implements ConstraintValidator<ValueEnumInteger, Integer> {
+public class ValueEnumValidatorInteger implements ConstraintValidator<ValueEnumInteger, Integer> {
 
     private Class classeEnum;
 
@@ -26,8 +26,8 @@ public class ValorEnumValidadorInteger implements ConstraintValidator<ValueEnumI
 
         return getEnumValues(classeEnum).stream()
                 .anyMatch(
-                        propriedadeEnum ->
-                                value.equals((Integer.valueOf(propriedadeEnum.toString()))));
+                        propertiesEnum ->
+                                value.equals((Integer.valueOf(propertiesEnum.toString()))));
     }
 
     private <E extends Enum> List<E> getEnumValues(Class<E> enumClass)

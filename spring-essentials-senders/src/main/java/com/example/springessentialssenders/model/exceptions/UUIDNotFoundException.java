@@ -6,16 +6,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.NOT_FOUND)
-public class UsernameAlreadyInUseException extends ExceptionAbstract {
+public class UUIDNotFoundException extends ExceptionAbstract {
 
     @Getter private String description;
 
-    public UsernameAlreadyInUseException(String message) {
+    public UUIDNotFoundException(String message) {
         super(message);
         this.description = message;
     }
 
-    public UsernameAlreadyInUseException(EValidation validation, String... params) {
+    public UUIDNotFoundException(EValidation validation, String... params) {
         super(validation, params);
     }
 }

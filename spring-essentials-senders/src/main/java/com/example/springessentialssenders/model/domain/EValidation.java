@@ -7,6 +7,11 @@ import lombok.Getter;
 public enum EValidation implements IEnumLabel<EValidation> {
 
     USERNAME_ALREADY_USING(1),
+    USER_NOT_FOUND_FOR_ID(2),
+    UUID_NOT_FOUND(3),
+    STUDENT_NOT_FOUND_FOR_ID(4),
+    STUDENT_NOT_FOUND_FOR_NAME(5),
+    USER_NOT_FOUND_FOR_USERNAME(6),
     NOT_IDENTIFIED(-999);
 
     private final Integer code;

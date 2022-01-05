@@ -6,9 +6,7 @@ import lombok.Getter;
 public abstract class ExceptionAbstract extends RuntimeException {
 
     private EValidation validation;
-
-    @Getter
-    private String[] params;
+    @Getter private String[] params;
 
     public Integer getCode() {
         return this.validation.getCode();

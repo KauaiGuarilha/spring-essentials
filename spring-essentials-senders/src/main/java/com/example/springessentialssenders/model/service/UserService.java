@@ -1,6 +1,8 @@
 package com.example.springessentialssenders.model.service;
 
 import com.example.springessentialssenders.model.dto.UserDTOResponse;
+import com.example.springessentialssenders.model.exceptions.UUIDNotFoundException;
+import com.example.springessentialssenders.model.exceptions.UserNotFoundException;
 import com.example.springessentialssenders.model.exceptions.UsernameAlreadyInUseException;
 import com.example.springessentialssenders.model.parser.UsersParser;
 import com.example.springessentialssenders.model.domain.EValidation;
@@ -68,32 +70,36 @@ public class UserService {
         if (Objects.isNull(user)) return;
 
         if (user.getUsername().equals(userDTO.getUsername()))
-            throw new UsernameAlreadyInUseException(EValidation.USERNAME_ALREADY_USING.getDescription());
+            throw new UsernameAlreadyInUseException(EValidation.USERNAME_ALREADY_USING, userDTO.getUsername());
     }
 
     public UserDTOResponse userById(String id){
-        try{
-            verifyUserExists(id);
+        try {
+            verifyUUID(id);
             Users user = repository.findByUserId(UUID.fromString(id));
             if (Objects.isNull(user))
-                throw new ResourceNotFoundException("User not found for ID");
+                throw new UserNotFoundException(EValidation.USER_NOT_FOUND_FOR_ID, id);
 
             return parser.toResponse(user);
+        } catch (UserNotFoundException | UUIDNotFoundException e){
+            throw e;
         } catch (Exception e){
             log.error("There was a generic problem when trying to return user by id.", ExceptionUtils.getStackTrace(e));
             throw new ResourceNotFoundException(EValidation.NOT_IDENTIFIED.getDescription());
         }
     }
 
-    private void verifyUserExists(String id) {
+    private void verifyUUID(String id) {
         if (Objects.isNull(UUID.fromString(id)))
-            throw new ResourceNotFoundException("User not found for UUID");
+            throw new UUIDNotFoundException(EValidation.UUID_NOT_FOUND, id);
     }
 
     public void delete(String id) {
         try {
-            verifyUserExists(id);
+            verifyUUID(id);
             repository.deleteById(UUID.fromString(id));
+        } catch (UUIDNotFoundException e){
+            throw e;
         } catch (Exception e){
             log.error("There was a generic problem when trying to delete users by id.", ExceptionUtils.getStackTrace(e));
             throw new ResourceNotFoundException(EValidation.NOT_IDENTIFIED.getDescription());

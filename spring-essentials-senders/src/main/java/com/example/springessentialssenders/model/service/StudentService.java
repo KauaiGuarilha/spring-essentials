@@ -1,5 +1,7 @@
 package com.example.springessentialssenders.model.service;
 
+import com.example.springessentialssenders.model.exceptions.StudentNotFoundException;
+import com.example.springessentialssenders.model.exceptions.UUIDNotFoundException;
 import com.example.springessentialssenders.model.parser.StudentParser;
 import com.example.springessentialssenders.model.domain.EValidation;
 import com.example.springessentialssenders.model.dto.StudentDTO;
@@ -12,6 +14,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -65,13 +68,13 @@ public class StudentService {
 
     public StudentDTO studentuById(String id) {
         try {
-            verifyStudentExists(id);
+            verifyUUID(id);
             Student student = repository.findByStudentId(UUID.fromString(id));
             if (Objects.isNull(student))
-                throw new ResourceNotFoundException("Student not found for ID");
+                throw new StudentNotFoundException(EValidation.STUDENT_NOT_FOUND_FOR_ID, id);
 
             return parser.dtoResponse(student);
-        } catch (ResourceNotFoundException e){
+        } catch (ResourceNotFoundException | StudentNotFoundException e){
             throw e;
         } catch (Exception e){
             log.error("There was a generic problem when trying to return students by id.", ExceptionUtils.getStackTrace(e));
@@ -82,10 +85,12 @@ public class StudentService {
     public List<Student> studentByName(String name) {
         try {
             if (StringUtils.isBlank(name))
-                throw new ResourceNotFoundException("Student not found for name");
+                throw new StudentNotFoundException(EValidation.STUDENT_NOT_FOUND_FOR_NAME);
 
             List<Student> students = repository.findByNameIgnoreCaseContaining(name);
             return students;
+        } catch (StudentNotFoundException e){
+            throw e;
         } catch (Exception e) {
             log.error("There was a generic problem when trying to return students by name.", ExceptionUtils.getStackTrace(e));
             throw new ResourceNotFoundException(EValidation.NOT_IDENTIFIED.getDescription());
@@ -94,16 +99,18 @@ public class StudentService {
 
     public void delete(String id) {
         try {
-            verifyStudentExists(id);
+            verifyUUID(id);
             repository.deleteById(UUID.fromString(id));
+        } catch (UUIDNotFoundException e){
+            throw e;
         } catch (Exception e){
             log.error("There was a generic problem when trying to delete students by id.", ExceptionUtils.getStackTrace(e));
             throw new ResourceNotFoundException(EValidation.NOT_IDENTIFIED.getDescription());
         }
     }
 
-    private void verifyStudentExists(String id) {
+    private void verifyUUID(String id) {
         if (Objects.isNull(UUID.fromString(id)))
-            throw new ResourceNotFoundException("Student not found for UUID");
+            throw new UUIDNotFoundException(EValidation.UUID_NOT_FOUND, id);
     }
 }

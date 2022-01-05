@@ -30,7 +30,7 @@ public class CustomUsersService implements UserDetailsService {
         try {
             Users users =
                     Optional.ofNullable(reporitory.findByUsername(username))
-                            .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                            .orElseThrow(() -> new UsernameNotFoundException(EValidation.USER_NOT_FOUND_FOR_USERNAME.getDescription()));
 
             List<GrantedAuthority> authorityListAdmin =
                     AuthorityUtils.createAuthorityList("ROLE_USER", "ROLE_ADMIN");
@@ -41,6 +41,8 @@ public class CustomUsersService implements UserDetailsService {
                     users.getAdmin().equals(ERole.ADMIN.getCodeRole())
                             ? authorityListAdmin
                             : authorityListUser);
+        } catch (UsernameNotFoundException e){
+            throw e;
         } catch (Exception e){
             log.error("There was a generic problem when trying to load the user by Username", ExceptionUtils.getStackTrace(e));
             throw new EssentialsRuntimeException(EValidation.NOT_IDENTIFIED.getDescription());

@@ -7,6 +7,7 @@ import com.example.springessentialssenders.model.exceptions.ResourceNotFoundExce
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.example.springessentialssenders.model.exceptions.UserNotFoundException;
 import com.example.springessentialssenders.model.exceptions.UsernameAlreadyInUseException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mapping.PropertyReferenceException;
@@ -33,19 +34,6 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         ErrorDTO errorDTO = ErrorDTO.builder()
                 .code(EValidation.NOT_IDENTIFIED.getCode())
                 .message(resourceNotFoundException.getMessage())
-                .build();
-
-        return new ResponseEntity<>(errorDTO, HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(UsernameAlreadyInUseException.class)
-    public ResponseEntity<?> handlerUsernameAlreadyInUseException(
-            UsernameAlreadyInUseException usernameAlreadyInUseException) {
-
-        log.error("Username is already using, try another one.", usernameAlreadyInUseException);
-        ErrorDTO errorDTO = ErrorDTO.builder()
-                .code(EValidation.USERNAME_ALREADY_USING.getCode())
-                .message(usernameAlreadyInUseException.getMessage())
                 .build();
 
         return new ResponseEntity<>(errorDTO, HttpStatus.BAD_REQUEST);

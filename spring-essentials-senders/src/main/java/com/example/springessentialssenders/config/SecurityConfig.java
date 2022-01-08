@@ -17,7 +17,7 @@ import org.springframework.web.cors.CorsConfiguration;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired CustomUsersService service;
+    @Autowired private CustomUsersService service;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {

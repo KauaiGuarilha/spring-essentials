@@ -35,16 +35,17 @@ public class StudentService {
         try {
             if (Objects.isNull(studentDTO.getId())) return sendForQueueAndSaveStudent(studentDTO);
 
-            Student student = parser.toStudent(studentDTO);
-            Optional<Student> optional = repository.findById(student.getId());
+            Student student = repository.findByStudentIdOptional(parser.toStudent(studentDTO).getId())
+                    .orElseThrow(
+                            () -> new StudentNotFoundException(EValidation.STUDENT_NOT_FOUND_FOR_ID, studentDTO.getId()));
 
-            Student db = new Student();
-            if (optional.isPresent()) db = optional.get();
-
+            Student db = student;
             db.setName(studentDTO.getName());
             db.setEmail(studentDTO.getEmail());
 
             return sendForQueueAndSaveStudent(parser.dtoResponse(db));
+        } catch (StudentNotFoundException e){
+            throw e;
         } catch (Exception e) {
             log.error("There was a generic problem when trying to save or update the student.", ExceptionUtils.getStackTrace(e));
             throw new ResourceNotFoundException(EValidation.NOT_IDENTIFIED.getDescription());
@@ -110,7 +111,7 @@ public class StudentService {
     }
 
     private void verifyUUID(String id) {
-        if (Objects.isNull(UUID.fromString(id)))
-            throw new UUIDNotFoundException(EValidation.UUID_NOT_FOUND, id);
+        if (Objects.isNull(id))
+            throw new UUIDNotFoundException(EValidation.UUID_NOT_FOUND);
     }
 }

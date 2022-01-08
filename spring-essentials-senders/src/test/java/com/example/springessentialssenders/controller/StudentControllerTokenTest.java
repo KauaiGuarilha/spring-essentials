@@ -41,15 +41,15 @@ public class StudentControllerTokenTest {
 
     @BeforeEach
     public void configProtectedHeaders() throws Exception {
-        String kauaiUser = "{\"username\": \"kauaiUser\", \"password\": \"12\"}";
+        String kauaiUser = "{\"username\": \"kauaiUser\", \"password\": \"123456\"}";
         HttpHeaders headers = restTemplate.postForEntity("/login", kauaiUser, String.class).getHeaders();
         this.protectedHeader = new HttpEntity<>(headers);
     }
 
     @BeforeEach
     public void configAdminHeaders() throws Exception {
-        String kauai = "{\"username\": \"kauai\", \"password\": \"123\"}";
-        HttpHeaders headers = restTemplate.postForEntity("/login", kauai, String.class).getHeaders();
+        String kauaiAdmin = "{\"username\": \"kauaiAdmin\", \"password\": \"123456\"}";
+        HttpHeaders headers = restTemplate.postForEntity("/login", kauaiAdmin, String.class).getHeaders();
         this.adminHeader = new HttpEntity<>(headers);
     }
 

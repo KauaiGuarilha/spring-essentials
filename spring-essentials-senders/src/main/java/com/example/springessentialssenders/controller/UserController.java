@@ -15,35 +15,35 @@ import javax.validation.Valid;
 @RequestMapping("v1")
 public class UserController {
 
-    @Autowired private UserService userService;
+    @Autowired private UserService service;
 
     @PostMapping("/user")
     public ResponseEntity<?> createUser(@Valid @RequestBody UserDTO dto){
-        return new ResponseEntity<>(userService.saveUpdate(dto), HttpStatus.CREATED);
+        return new ResponseEntity<>(service.saveUpdate(dto), HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasRole('USER')")
-    @PutMapping("/protected/update-user")
+    @PutMapping("/protected/user/update")
     public ResponseEntity<?> updateUser(@Valid @RequestBody UserDTO dto){
-        return new ResponseEntity<>(userService.saveUpdate(dto), HttpStatus.OK);
+        return new ResponseEntity<>(service.saveUpdate(dto), HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/protected/user/{id}")
     public ResponseEntity<?> returnUser(@PathVariable String id){
-        return new ResponseEntity<>(userService.userById(id), HttpStatus.OK);
+        return new ResponseEntity<>(service.userById(id), HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/admin/user/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable String id){
-        userService.delete(id);
+        service.delete(id);
         return ResponseEntity.ok().build();
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin/user")
     public ResponseEntity<?> listAll(Pageable pageable){
-        return new ResponseEntity<>(userService.listAll(pageable), HttpStatus.OK);
+        return new ResponseEntity<>(service.listAll(pageable), HttpStatus.OK);
     }
 }

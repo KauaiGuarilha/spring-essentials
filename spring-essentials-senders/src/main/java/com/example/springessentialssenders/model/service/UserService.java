@@ -1,14 +1,11 @@
 package com.example.springessentialssenders.model.service;
 
 import com.example.springessentialssenders.model.dto.UserDTOResponse;
-import com.example.springessentialssenders.model.exceptions.UUIDNotFoundException;
-import com.example.springessentialssenders.model.exceptions.UserNotFoundException;
-import com.example.springessentialssenders.model.exceptions.UsernameAlreadyInUseException;
+import com.example.springessentialssenders.model.exceptions.*;
 import com.example.springessentialssenders.model.parser.UsersParser;
 import com.example.springessentialssenders.model.domain.EValidation;
 import com.example.springessentialssenders.model.dto.UserDTO;
 import com.example.springessentialssenders.model.entity.Users;
-import com.example.springessentialssenders.model.exceptions.ResourceNotFoundException;
 import com.example.springessentialssenders.model.repository.UsersReporitory;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -33,18 +30,17 @@ public class UserService {
         try {
             if (Objects.isNull(userDTO.getId())) return saveUser(userDTO);
 
-            Users user = parser.toUsers(userDTO);
-            Optional<Users> optional = repository.findById(user.getId());
+            Users user = repository.findByUserIdOptional(parser.toUsers(userDTO).getId())
+                    .orElseThrow(
+                            () -> new UUIDNotFoundException(EValidation.UUID_NOT_FOUND));
 
-            Users db = new Users();
-            if (optional.isPresent()) db = optional.get();
-
+            Users db = user;
             db.setName(userDTO.getName());
             db.setPassword(cryptPassword(userDTO.getPassword()));
             db.setAdmin(userDTO.getAdmin());
 
-            return parser.toResponse(db);
-        } catch (UsernameAlreadyInUseException e){
+            return parser.toResponse(repository.save(db));
+        } catch (UsernameAlreadyInUseException | UUIDNotFoundException e){
             throw e;
         } catch (Exception e){
             log.error("There was a generic problem when trying to save or update the user.", ExceptionUtils.getStackTrace(e));
@@ -90,8 +86,8 @@ public class UserService {
     }
 
     private void verifyUUID(String id) {
-        if (Objects.isNull(UUID.fromString(id)))
-            throw new UUIDNotFoundException(EValidation.UUID_NOT_FOUND, id);
+        if (Objects.isNull(id))
+            throw new UUIDNotFoundException(EValidation.UUID_NOT_FOUND);
     }
 
     public void delete(String id) {
@@ -108,7 +104,12 @@ public class UserService {
 
     public Page<Users> listAll(Pageable pageable) {
         try {
+            if (Objects.isNull(pageable))
+                throw new PageableNotFoundException(EValidation.PAGEABLE_NOT_FOUND);
+
             return repository.findAll(pageable);
+        } catch (PageableNotFoundException e){
+            throw e;
         } catch (Exception e){
             log.error("There was a generic problem when trying to list all user.", ExceptionUtils.getStackTrace(e));
             throw new ResourceNotFoundException(EValidation.NOT_IDENTIFIED.getDescription());

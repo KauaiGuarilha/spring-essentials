@@ -26,7 +26,7 @@ public class StudentRepositoryTest {
     public void createShouldPersistData() {
         Student student =
                 Student.builder()
-                        .id(UUID.fromString("e5fbe001-c32e-4775-869c-3042dcffcd4e"))
+                        .id(UUID.randomUUID())
                         .name("Kauai Guarilha")
                         .email("kauai@kauai.com")
                         .build();
@@ -43,7 +43,7 @@ public class StudentRepositoryTest {
     public void deleteShouldRemoveData() {
         Student student =
                 Student.builder()
-                        .id(UUID.fromString("e5fbe001-c32e-4775-869c-3042dcffcd4e"))
+                        .id(UUID.randomUUID())
                         .name("Kauai Guarilha")
                         .email("kauai@kauai.com")
                         .build();
@@ -59,7 +59,7 @@ public class StudentRepositoryTest {
     public void updateShouldChangeAndPersistData() {
         Student student =
                 Student.builder()
-                        .id(UUID.fromString("e5fbe001-c32e-4775-869c-3042dcffcd4e"))
+                        .id(UUID.randomUUID())
                         .name("Kauai Guarilha")
                         .email("kauai@kauai.com")
                         .build();
@@ -79,14 +79,14 @@ public class StudentRepositoryTest {
     public void findNameIgnoreCaseContainingShouldIgnoreCase() {
         Student student =
                 Student.builder()
-                        .id(UUID.fromString("e5fbe001-c32e-4775-869c-3042dcffcd4e"))
+                        .id(UUID.randomUUID())
                         .name("Kauai Guarilha")
                         .email("kauai@kauai.com")
                         .build();
 
         Student student2 =
                 Student.builder()
-                        .id(UUID.fromString("68ea2f6f-215d-404b-806c-105c3344251a"))
+                        .id(UUID.randomUUID())
                         .name("Kauai Guarilha2")
                         .email("kauai2@kauai.com")
                         .build();

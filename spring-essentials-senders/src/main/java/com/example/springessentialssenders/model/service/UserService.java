@@ -81,7 +81,7 @@ public class UserService {
             throw e;
         } catch (Exception e){
             log.error("There was a generic problem when trying to return user by id.", ExceptionUtils.getStackTrace(e));
-            throw new ResourceNotFoundException(EValidation.NOT_IDENTIFIED.getDescription());
+            throw new ResourceNotFoundException(EValidation.NOT_IDENTIFIED.getDescription(), e);
         }
     }
 

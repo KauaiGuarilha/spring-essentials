@@ -1,6 +1,6 @@
 package com.example.springessentialsconsumers.model.queue.consumers;
 
-import com.example.springessentialsconsumers.model.builder.StudentParser;
+import com.example.springessentialsconsumers.model.parser.StudentParser;
 import com.example.springessentialsconsumers.model.dto.StudentDTO;
 import com.example.springessentialsconsumers.model.repository.StudentRepository;
 import lombok.extern.slf4j.Slf4j;

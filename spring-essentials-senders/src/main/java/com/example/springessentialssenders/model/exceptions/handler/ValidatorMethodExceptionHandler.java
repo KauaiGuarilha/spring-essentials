@@ -30,8 +30,21 @@ import java.util.List;
 @ControllerAdvice
 public class ValidatorMethodExceptionHandler extends ResponseEntityExceptionHandler {
 
+    @ExceptionHandler(StudentNotFoundException.class)
+    public ResponseEntity<?> handlerStudentNotFoundException(
+            StudentNotFoundException studentNotFoundException) {
+
+        log.error("User not found for ID.", studentNotFoundException);
+        ErrorDTO errorDTO = ErrorDTO.builder()
+                .code(EValidation.STUDENT_NOT_FOUND_FOR_ID.getCode())
+                .message(studentNotFoundException.getMessage())
+                .build();
+
+        return new ResponseEntity<>(errorDTO, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(UsernameAlreadyInUseException.class)
-    public ResponseEntity<?> handlerUUIDNotFoundException(
+    public ResponseEntity<?> handlerUsernameAlreadyUsingException(
             UsernameAlreadyInUseException usernameAlreadyInUseException) {
 
         log.error("Username is already using, try another one.", usernameAlreadyInUseException);
@@ -69,16 +82,5 @@ public class ValidatorMethodExceptionHandler extends ResponseEntityExceptionHand
         return new ResponseEntity<>(errorDTO, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(StudentNotFoundException.class)
-    public ResponseEntity<?> handlerStudentNotFoundException(
-            StudentNotFoundException studentNotFoundException) {
 
-        log.error("User not found for ID.", studentNotFoundException);
-        ErrorDTO errorDTO = ErrorDTO.builder()
-                .code(EValidation.STUDENT_NOT_FOUND_FOR_ID.getCode())
-                .message(studentNotFoundException.getMessage())
-                .build();
-
-        return new ResponseEntity<>(errorDTO, HttpStatus.BAD_REQUEST);
-    }
 }

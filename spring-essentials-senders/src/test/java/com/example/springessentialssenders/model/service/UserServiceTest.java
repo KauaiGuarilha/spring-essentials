@@ -100,7 +100,7 @@ public class UserServiceTest {
                         () -> service.saveUpdate(userDTO));
 
         assertEquals(thrown.getClass(), UsernameAlreadyInUseException.class);
-        assertEquals(thrown.getMessage(), "Username {0} is already using, try another one.");
+        assertEquals(thrown.getMessage(), "Username " + user.getUsername() + " is already using, try another one.");
 
         verify(repository, times(1)).findByUsername(user.getUsername());
     }

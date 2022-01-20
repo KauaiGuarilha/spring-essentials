@@ -1,6 +1,6 @@
-package com.example.springessentialssenders.model.exceptions;
+package com.example.springessentialsconsumers.model.exceptions;
 
-import com.example.springessentialssenders.model.domain.EValidation;
+import com.example.springessentialsconsumers.model.domain.EValidation;
 import lombok.Getter;
 
 import java.util.List;
@@ -12,9 +12,6 @@ public abstract class ExceptionAbstract extends RuntimeException {
     private EValidation validation;
     @Getter private String[] params;
 
-    private Integer code;
-    private String message;
-
     public Integer getCode() {
         return this.validation.getCode();
     }
@@ -23,16 +20,20 @@ public abstract class ExceptionAbstract extends RuntimeException {
         return this.validation.getDescription(this.params);
     }
 
+    public ExceptionAbstract(EValidation validation) {
+        super(validation.getDescription());
+        this.validation = validation;
+    }
+
     public ExceptionAbstract(EValidation validation, String... params) {
         super(validation.getDescription());
         this.validation = validation;
         this.params = params;
     }
 
-    public ExceptionAbstract(Integer code, String message) {
-        super(message);
-        this.code = code;
-        this.message = message;
+    public ExceptionAbstract(EValidation validation, Throwable cause) {
+        super(validation.getDescription(), cause);
+        this.validation = validation;
     }
 
     public ExceptionAbstract(String validation) {

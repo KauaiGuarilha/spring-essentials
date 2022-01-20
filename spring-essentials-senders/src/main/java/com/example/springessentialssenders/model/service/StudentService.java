@@ -1,20 +1,14 @@
 package com.example.springessentialssenders.model.service;
 
-import com.example.springessentialssenders.model.exceptions.StudentNotFoundException;
-import com.example.springessentialssenders.model.exceptions.UUIDNotFoundException;
-import com.example.springessentialssenders.model.parser.StudentParser;
 import com.example.springessentialssenders.model.domain.EValidation;
 import com.example.springessentialssenders.model.dto.StudentDTO;
 import com.example.springessentialssenders.model.entity.Student;
 import com.example.springessentialssenders.model.exceptions.ResourceNotFoundException;
+import com.example.springessentialssenders.model.exceptions.StudentNotFoundException;
+import com.example.springessentialssenders.model.exceptions.UUIDNotFoundException;
+import com.example.springessentialssenders.model.parser.StudentParser;
 import com.example.springessentialssenders.model.queue.senders.QueueStudentSender;
 import com.example.springessentialssenders.model.repository.StudentRepository;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
-
-import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -22,6 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 @Slf4j
 @Service

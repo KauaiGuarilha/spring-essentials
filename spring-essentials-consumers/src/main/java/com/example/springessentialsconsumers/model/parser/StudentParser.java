@@ -17,12 +17,4 @@ public class StudentParser {
                 .email(dto.getEmail())
                 .build();
     }
-
-    public StudentDTO dtoResponse(Student student) {
-        return StudentDTO.builder()
-                .id(student.getId().toString())
-                .name(student.getName())
-                .email(student.getEmail())
-                .build();
-    }
 }

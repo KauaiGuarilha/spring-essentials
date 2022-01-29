@@ -1,6 +1,5 @@
 package com.example.springessentialsconsumers.model.domain.interfaces;
 
-
 import com.example.springessentialsconsumers.model.utils.MessageUtils;
 
 public interface IEnumLabel<E extends Enum<E>> {

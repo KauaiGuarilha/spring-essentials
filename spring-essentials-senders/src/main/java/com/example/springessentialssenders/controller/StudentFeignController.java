@@ -1,6 +1,8 @@
 package com.example.springessentialssenders.controller;
 
 import com.example.springessentialssenders.model.service.StudentFeignService;
+import com.example.springessentialssenders.model.service.StudentService;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,11 +16,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("v1")
 public class StudentFeignController {
 
-    @Autowired private StudentFeignService service;
+    @Autowired private StudentService service;
+    @Autowired private StudentFeignService feignService;
 
     @PreAuthorize("hasRole('USER')")
+    @HystrixCommand(fallbackMethod = "findStudentAlternative")
     @GetMapping("/protected/student-consumers/findByName/{name}")
     public ResponseEntity findStudentConsumersByName(@PathVariable String name) {
-        return new ResponseEntity(service.findStudentConsumersByName(name), HttpStatus.OK);
+        return new ResponseEntity(feignService.findStudentConsumersByName(name), HttpStatus.OK);
+    }
+
+    public ResponseEntity findStudentAlternative(@PathVariable String name) {
+        return new ResponseEntity(service.studentByName(name), HttpStatus.OK);
     }
 }

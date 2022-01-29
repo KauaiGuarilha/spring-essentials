@@ -14,8 +14,7 @@ public class ValidationUtilsParser implements ValidationParser {
     private final Map<Integer, Integer> mapCodes;
 
     {
-        mapCodes =
-                Map.ofEntries(
+        mapCodes = Map.ofEntries(
                         Map.entry(-999, EValidation.NOT_IDENTIFIED.getCode()));
     }
 

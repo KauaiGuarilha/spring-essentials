@@ -54,7 +54,7 @@ public class StudentService {
         queueStudentSender.sendMessage(studentDTO);
         return parser.dtoResponse(repository.save(parser.toStudent(studentDTO)));
     }
-
+ 
 
     public Page<Student> listAll(Pageable pageable) {
         try {

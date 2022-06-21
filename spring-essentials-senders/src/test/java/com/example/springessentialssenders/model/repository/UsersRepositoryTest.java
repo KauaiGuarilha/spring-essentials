@@ -24,8 +24,8 @@ public class UsersRepositoryTest {
     @Rule public ExpectedException thrown = ExpectedException.none();
 
     @Test
-    @DisplayName("Create should persist data")
-    public void createShouldPersistData() {
+    @DisplayName("Should create persist user.")
+    public void shouldCreatePersistUser() {
         Users user = Users.builder()
                 .id(UUID.randomUUID())
                 .name("Kauai")
@@ -34,18 +34,18 @@ public class UsersRepositoryTest {
                 .admin(2)
                 .build();
 
-        this.repository.save(user);
+        Users userRepository = this.repository.save(user);
 
         Assertions.assertThat(user.getId()).isNotNull();
-        Assertions.assertThat(user.getName()).isEqualTo("Kauai");
-        Assertions.assertThat(user.getUsername()).isEqualTo("kauaiTest");
-        Assertions.assertThat(user.getPassword()).isEqualTo("123456");
-        Assertions.assertThat(user.getAdmin()).isEqualTo(2);
+        Assertions.assertThat(user.getName()).isEqualTo(userRepository.getName());
+        Assertions.assertThat(user.getUsername()).isEqualTo(userRepository.getUsername());
+        Assertions.assertThat(user.getPassword()).isEqualTo(userRepository.getPassword());
+        Assertions.assertThat(user.getAdmin()).isEqualTo(userRepository.getAdmin());
     }
 
     @Test
-    @DisplayName("Delete should remove data")
-    public void deleteShouldRemoveData() {
+    @DisplayName("Should delete user.")
+    public void shouldDeleteUser() {
         Users user = Users.builder()
                 .id(UUID.randomUUID())
                 .name("Kauai")
@@ -54,15 +54,22 @@ public class UsersRepositoryTest {
                 .admin(2)
                 .build();
 
-        this.repository.save(user);
+        Users userRepository = this.repository.save(user);
+
+        Assertions.assertThat(user.getId()).isNotNull();
+        Assertions.assertThat(user.getName()).isEqualTo(userRepository.getName());
+        Assertions.assertThat(user.getUsername()).isEqualTo(userRepository.getUsername());
+        Assertions.assertThat(user.getPassword()).isEqualTo(userRepository.getPassword());
+        Assertions.assertThat(user.getAdmin()).isEqualTo(userRepository.getAdmin());
+
         this.repository.delete(user);
 
         Assertions.assertThat(repository.findByUserId(user.getId())).isNull();
     }
 
     @Test
-    @DisplayName("Update should change and persist data")
-    public void updateShouldChangeAndPersistData() {
+    @DisplayName("Should update change and persist user.")
+    public void shouldUpdateChangeAndPersistUser() {
         Users user = Users.builder()
                 .id(UUID.randomUUID())
                 .name("Kauai")
@@ -71,21 +78,28 @@ public class UsersRepositoryTest {
                 .admin(2)
                 .build();
 
-        this.repository.save(user);
+        Users userRepository = this.repository.save(user);
+
+        Assertions.assertThat(user.getId()).isNotNull();
+        Assertions.assertThat(user.getName()).isEqualTo(userRepository.getName());
+        Assertions.assertThat(user.getUsername()).isEqualTo(userRepository.getUsername());
+        Assertions.assertThat(user.getPassword()).isEqualTo(userRepository.getPassword());
+        Assertions.assertThat(user.getAdmin()).isEqualTo(userRepository.getAdmin());
+
         user.setName("Kauai Guarilha");
         user.setPassword("123");
         user.setAdmin(1);
 
-        this.repository.save(user);
+        userRepository = this.repository.save(user);
 
-        Assertions.assertThat(user.getName()).isEqualTo("Kauai Guarilha");
-        Assertions.assertThat(user.getPassword()).isEqualTo("123");
-        Assertions.assertThat(user.getAdmin()).isEqualTo(1);
+        Assertions.assertThat(user.getName()).isEqualTo(userRepository.getName());
+        Assertions.assertThat(user.getPassword()).isEqualTo(userRepository.getPassword());
+        Assertions.assertThat(user.getAdmin()).isEqualTo(userRepository.getAdmin());
     }
 
     @Test
-    @DisplayName("Find name IgnoreCase containing should IgnoreCase")
-    public void findNameIgnoreCaseContainingShouldIgnoreCase() {
+    @DisplayName("Should find user name ignoreCase containing ignoreCase.")
+    public void shouldFindUserNameIgnoreCaseContainingIgnoreCase() {
         Users userAdmin = Users.builder()
                 .id(UUID.randomUUID())
                 .name("Kauai Guarilha")
@@ -102,8 +116,21 @@ public class UsersRepositoryTest {
                 .admin(1)
                 .build();
 
-        this.repository.save(userAdmin);
-        this.repository.save(userUser);
+        Users userRepositoryAdmin = this.repository.save(userAdmin);
+
+        Assertions.assertThat(userAdmin.getId()).isNotNull();
+        Assertions.assertThat(userAdmin.getName()).isEqualTo(userRepositoryAdmin.getName());
+        Assertions.assertThat(userAdmin.getUsername()).isEqualTo(userRepositoryAdmin.getUsername());
+        Assertions.assertThat(userAdmin.getPassword()).isEqualTo(userRepositoryAdmin.getPassword());
+        Assertions.assertThat(userAdmin.getAdmin()).isEqualTo(userRepositoryAdmin.getAdmin());
+
+        Users userRepositoryUser = this.repository.save(userUser);
+
+        Assertions.assertThat(userUser.getId()).isNotNull();
+        Assertions.assertThat(userUser.getName()).isEqualTo(userRepositoryUser.getName());
+        Assertions.assertThat(userUser.getUsername()).isEqualTo(userRepositoryUser.getUsername());
+        Assertions.assertThat(userUser.getPassword()).isEqualTo(userRepositoryUser.getPassword());
+        Assertions.assertThat(userUser.getAdmin()).isEqualTo(userRepositoryUser.getAdmin());
 
         List<Users> users = repository.findByNameIgnoreCaseContaining("Kauai Guarilha");
 
@@ -111,8 +138,8 @@ public class UsersRepositoryTest {
     }
 
     @Test
-    @DisplayName("Find by username should")
-    public void findByUsernameShould() {
+    @DisplayName("Should find by username.")
+    public void shouldFindByUsername() {
         Users userAdmin = Users.builder()
                 .id(UUID.randomUUID())
                 .name("Kauai Guarilha")
@@ -121,10 +148,19 @@ public class UsersRepositoryTest {
                 .admin(2)
                 .build();
 
-        this.repository.save(userAdmin);
+        Users userRepository = this.repository.save(userAdmin);
+
+        Assertions.assertThat(userAdmin.getId()).isNotNull();
+        Assertions.assertThat(userAdmin.getName()).isEqualTo(userRepository.getName());
+        Assertions.assertThat(userAdmin.getUsername()).isEqualTo(userRepository.getUsername());
+        Assertions.assertThat(userAdmin.getPassword()).isEqualTo(userRepository.getPassword());
+        Assertions.assertThat(userAdmin.getAdmin()).isEqualTo(userRepository.getAdmin());
 
         Users user = repository.findByUsername(userAdmin.getUsername());
 
-        Assertions.assertThat(user.getUsername()).isEqualTo("kauaiAdmin");
+        Assertions.assertThat(user.getName()).isEqualTo(userAdmin.getName());
+        Assertions.assertThat(user.getUsername()).isEqualTo(userAdmin.getUsername());
+        Assertions.assertThat(user.getPassword()).isEqualTo(userAdmin.getPassword());
+        Assertions.assertThat(user.getAdmin()).isEqualTo(userAdmin.getAdmin());
     }
 }

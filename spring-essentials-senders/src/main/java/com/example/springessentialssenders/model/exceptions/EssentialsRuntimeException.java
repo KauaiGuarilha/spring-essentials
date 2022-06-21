@@ -12,8 +12,4 @@ public class EssentialsRuntimeException extends RuntimeException {
     public EssentialsRuntimeException(Throwable causa) {
         super(causa);
     }
-
-    public EssentialsRuntimeException(String msg, Throwable causa) {
-        super(msg, causa);
-    }
 }

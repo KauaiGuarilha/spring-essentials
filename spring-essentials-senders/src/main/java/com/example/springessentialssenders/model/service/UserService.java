@@ -44,7 +44,7 @@ public class UserService {
             throw e;
         } catch (Exception e){
             log.error("There was a generic problem when trying to save or update the user.", ExceptionUtils.getStackTrace(e));
-            throw new ResourceNotFoundException(EValidation.NOT_IDENTIFIED.getDescription());
+            throw new ResourceNotFoundException(EValidation.NOT_IDENTIFIED);
         }
     }
 
@@ -81,7 +81,7 @@ public class UserService {
             throw e;
         } catch (Exception e){
             log.error("There was a generic problem when trying to return user by id.", ExceptionUtils.getStackTrace(e));
-            throw new ResourceNotFoundException(EValidation.NOT_IDENTIFIED.getDescription(), e);
+            throw new ResourceNotFoundException(EValidation.NOT_IDENTIFIED);
         }
     }
 
@@ -98,7 +98,7 @@ public class UserService {
             throw e;
         } catch (Exception e){
             log.error("There was a generic problem when trying to delete users by id.", ExceptionUtils.getStackTrace(e));
-            throw new ResourceNotFoundException(EValidation.NOT_IDENTIFIED.getDescription());
+            throw new ResourceNotFoundException(EValidation.NOT_IDENTIFIED);
         }
     }
 
@@ -112,7 +112,7 @@ public class UserService {
             throw e;
         } catch (Exception e){
             log.error("There was a generic problem when trying to list all user.", ExceptionUtils.getStackTrace(e));
-            throw new ResourceNotFoundException(EValidation.NOT_IDENTIFIED.getDescription());
+            throw new ResourceNotFoundException(EValidation.NOT_IDENTIFIED);
         }
     }
 }

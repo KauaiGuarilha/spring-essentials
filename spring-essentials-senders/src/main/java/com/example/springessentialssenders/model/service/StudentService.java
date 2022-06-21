@@ -46,7 +46,7 @@ public class StudentService {
             throw e;
         } catch (Exception e) {
             log.error("There was a generic problem when trying to save or update the student.", ExceptionUtils.getStackTrace(e));
-            throw new ResourceNotFoundException(EValidation.NOT_IDENTIFIED.getDescription());
+            throw new ResourceNotFoundException(EValidation.NOT_IDENTIFIED);
         }
     }
 
@@ -54,14 +54,13 @@ public class StudentService {
         queueStudentSender.sendMessage(studentDTO);
         return parser.dtoResponse(repository.save(parser.toStudent(studentDTO)));
     }
- 
 
     public Page<Student> listAll(Pageable pageable) {
         try {
             return repository.findAll(pageable);
         } catch (Exception e){
             log.error("There was a generic problem when trying to list all student.", ExceptionUtils.getStackTrace(e));
-            throw new ResourceNotFoundException(EValidation.NOT_IDENTIFIED.getDescription());
+            throw new ResourceNotFoundException(EValidation.NOT_IDENTIFIED);
         }
     }
 
@@ -77,7 +76,7 @@ public class StudentService {
             throw e;
         } catch (Exception e){
             log.error("There was a generic problem when trying to return students by id.", ExceptionUtils.getStackTrace(e));
-            throw new ResourceNotFoundException(EValidation.NOT_IDENTIFIED.getDescription());
+            throw new ResourceNotFoundException(EValidation.NOT_IDENTIFIED);
         }
     }
 
@@ -92,7 +91,7 @@ public class StudentService {
             throw e;
         } catch (Exception e) {
             log.error("There was a generic problem when trying to return students by name.", ExceptionUtils.getStackTrace(e));
-            throw new ResourceNotFoundException(EValidation.NOT_IDENTIFIED.getDescription());
+            throw new ResourceNotFoundException(EValidation.NOT_IDENTIFIED);
         }
     }
 
@@ -104,7 +103,7 @@ public class StudentService {
             throw e;
         } catch (Exception e){
             log.error("There was a generic problem when trying to delete students by id.", ExceptionUtils.getStackTrace(e));
-            throw new ResourceNotFoundException(EValidation.NOT_IDENTIFIED.getDescription());
+            throw new ResourceNotFoundException(EValidation.NOT_IDENTIFIED);
         }
     }
 

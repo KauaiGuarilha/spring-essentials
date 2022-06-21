@@ -22,8 +22,8 @@ public class StudentRepositoryTest {
     @Rule public ExpectedException thrown = ExpectedException.none();
 
     @Test
-    @DisplayName("Create should persist data")
-    public void createShouldPersistData() {
+    @DisplayName("Should create persist student.")
+    public void shouldCreatePersistStudent() {
         Student student =
                 Student.builder()
                         .id(UUID.randomUUID())
@@ -31,16 +31,16 @@ public class StudentRepositoryTest {
                         .email("kauai@kauai.com")
                         .build();
 
-        this.repository.save(student);
+        Student studentRepository = this.repository.save(student);
 
         Assertions.assertThat(student.getId()).isNotNull();
-        Assertions.assertThat(student.getName()).isEqualTo("Kauai Guarilha");
-        Assertions.assertThat(student.getEmail()).isEqualTo("kauai@kauai.com");
+        Assertions.assertThat(student.getName()).isEqualTo(studentRepository.getName());
+        Assertions.assertThat(student.getEmail()).isEqualTo(studentRepository.getEmail());
     }
 
     @Test
-    @DisplayName("Delete should remove data")
-    public void deleteShouldRemoveData() {
+    @DisplayName("Should delete student.")
+    public void shouldDeleteStudent() {
         Student student =
                 Student.builder()
                         .id(UUID.randomUUID())
@@ -48,15 +48,20 @@ public class StudentRepositoryTest {
                         .email("kauai@kauai.com")
                         .build();
 
-        this.repository.save(student);
+        Student studentRepository = this.repository.save(student);
+
+        Assertions.assertThat(student.getId()).isNotNull();
+        Assertions.assertThat(student.getName()).isEqualTo(studentRepository.getName());
+        Assertions.assertThat(student.getEmail()).isEqualTo(studentRepository.getEmail());
+
         this.repository.delete(student);
 
         Assertions.assertThat(repository.findByStudentId(student.getId())).isNull();
     }
 
     @Test
-    @DisplayName("Update should change and persist data")
-    public void updateShouldChangeAndPersistData() {
+    @DisplayName("Should update change and persist student.")
+    public void shouldUpdateChangeAndPersistStudent() {
         Student student =
                 Student.builder()
                         .id(UUID.randomUUID())
@@ -64,19 +69,24 @@ public class StudentRepositoryTest {
                         .email("kauai@kauai.com")
                         .build();
 
-        this.repository.save(student);
+        Student studentRepository = this.repository.save(student);
+
+        Assertions.assertThat(student.getId()).isNotNull();
+        Assertions.assertThat(student.getName()).isEqualTo(studentRepository.getName());
+        Assertions.assertThat(student.getEmail()).isEqualTo(studentRepository.getEmail());
+
         student.setName("Kauai");
         student.setEmail("kauai@k.com");
 
-        this.repository.save(student);
+        studentRepository = this.repository.save(student);
 
-        Assertions.assertThat(student.getName()).isEqualTo("Kauai");
-        Assertions.assertThat(student.getEmail()).isEqualTo("kauai@k.com");
+        Assertions.assertThat(student.getName()).isEqualTo(studentRepository.getName());
+        Assertions.assertThat(student.getEmail()).isEqualTo(studentRepository.getEmail());
     }
 
     @Test
-    @DisplayName("Find name IgnoreCase containing should IgnoreCase")
-    public void findNameIgnoreCaseContainingShouldIgnoreCase() {
+    @DisplayName("Should find student name ignoreCase containing ignoreCase.")
+    public void shouldFindStudentNameIgnoreCaseContainingIgnoreCase() {
         Student student =
                 Student.builder()
                         .id(UUID.randomUUID())
@@ -91,8 +101,18 @@ public class StudentRepositoryTest {
                         .email("kauai2@kauai.com")
                         .build();
 
-        this.repository.save(student);
-        this.repository.save(student2);
+        Student studentRepository = this.repository.save(student);
+
+        Assertions.assertThat(student.getId()).isNotNull();
+        Assertions.assertThat(student.getName()).isEqualTo(studentRepository.getName());
+        Assertions.assertThat(student.getEmail()).isEqualTo(studentRepository.getEmail());
+
+        Student student2Repository = this.repository.save(student2);
+
+        Assertions.assertThat(student2.getId()).isNotNull();
+        Assertions.assertThat(student2.getName()).isEqualTo(student2Repository.getName());
+        Assertions.assertThat(student2.getEmail()).isEqualTo(student2Repository.getEmail());
+
         List<Student> students = repository.findByNameIgnoreCaseContaining("Kauai Guarilha");
 
         Assertions.assertThat(students.size()).isEqualTo(2);

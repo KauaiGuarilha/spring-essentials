@@ -1,5 +1,6 @@
 package com.example.springessentialssenders.model.service;
 
+import com.example.springessentialssenders.model.domain.EValidation;
 import com.example.springessentialssenders.model.dto.StudentDTO;
 import com.example.springessentialssenders.model.entity.Student;
 import com.example.springessentialssenders.model.exceptions.ResourceNotFoundException;
@@ -78,7 +79,7 @@ public class StudentServiceTest {
                 assertThrows(ResourceNotFoundException.class, () -> service.saveUpdate(null));
 
         assertEquals(thrown.getClass(), ResourceNotFoundException.class);
-        assertEquals(thrown.getDescription(), "An unidentified problem has occurred.");
+        assertEquals(thrown.getMessage(), "An unidentified problem has occurred.");
     }
 
     @Test
@@ -95,7 +96,7 @@ public class StudentServiceTest {
                 assertThrows(ResourceNotFoundException.class, () -> service.saveUpdate(null));
 
         assertEquals(thrown.getClass(), ResourceNotFoundException.class);
-        assertEquals(thrown.getDescription(), "An unidentified problem has occurred.");
+        assertEquals(thrown.getMessage(), "An unidentified problem has occurred.");
     }
 
     @Test
@@ -162,7 +163,7 @@ public class StudentServiceTest {
 
     @Test
     @DisplayName("Should return student by id.")
-    public void shouldReturnStudentById() throws Exception {
+    public void shouldReturnStudentById() {
         StudentDTO studentDTO = StudentDTO.builder()
                 .id("8e31518e-1558-48b0-9a06-5edfb772153f")
                 .name("kauai")
@@ -195,12 +196,12 @@ public class StudentServiceTest {
                 assertThrows(ResourceNotFoundException.class, () -> service.studentuById(null));
 
         assertEquals(thrown.getClass(), ResourceNotFoundException.class);
-        assertEquals(thrown.getDescription(), "An unidentified problem has occurred.");
+        assertEquals(thrown.getMessage(), "An unidentified problem has occurred.");
     }
 
     @Test
     @DisplayName("Should return ResourceNotFoundException when students by id null.")
-    public void shouldResourceNotFoundExceptionWhenStudentByIdNull() throws Exception {
+    public void shouldResourceNotFoundExceptionWhenStudentByIdNull()  {
         Student studentRequest = Student.builder()
                 .id(UUID.fromString("8e31518e-1558-48b0-9a06-5edfb772153f"))
                 .name("kauai12")
@@ -220,7 +221,7 @@ public class StudentServiceTest {
 
     @Test
     @DisplayName("Should return student by name.")
-    public void shouldReturnStudentByName() throws Exception {
+    public void shouldReturnStudentByName() {
         List<Student> students = new ArrayList<>();
         Student student = Student.builder()
                 .id(UUID.fromString("8e31518e-1558-48b0-9a06-5edfb772153f"))
@@ -267,12 +268,12 @@ public class StudentServiceTest {
 
     @Test
     @DisplayName("Should exception when delete student by id.")
-    public void shouldExceptionWhenDeleteStudentById() throws Exception {
+    public void shouldExceptionWhenDeleteStudentById() {
         Student studentRequest = Student.builder()
                 .id(UUID.fromString("8e31518e-1558-48b0-9a06-5edfb772153f"))
                 .build();
 
-        doThrow(new ResourceNotFoundException("")).when(repository).deleteById(studentRequest.getId());
+        doThrow(new ResourceNotFoundException(EValidation.NOT_IDENTIFIED)).when(repository).deleteById(studentRequest.getId());
 
         ResourceNotFoundException thrown =
                 assertThrows(ResourceNotFoundException.class,

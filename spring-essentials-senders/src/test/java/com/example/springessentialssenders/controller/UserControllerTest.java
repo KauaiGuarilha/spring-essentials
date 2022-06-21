@@ -76,6 +76,26 @@ public class UserControllerTest {
     }
 
     @Test
+    @DisplayName("Should save user")
+    public void shouldSaveStudent2() throws Exception {
+        UserDTO userDTO = UserDTO.builder()
+                .id(null)
+                .name("Kauai")
+                .username("kauaiTest")
+                .password("123456")
+                .admin(null)
+                .build();
+
+        when(service.saveUpdate(userDTO)).thenThrow(Exception.class);
+
+        mockMvc.perform(
+                        post("/v1/user")
+                                .content(EssentialsObjectMapper.asJsonString(userDTO))
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     @DisplayName("Should update user")
     @WithMockUser(username = "kauaiUser", password = "123456", roles = {"USER", "ADMIN"})
     public void shouldUpdateStudent() throws Exception {

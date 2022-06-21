@@ -23,8 +23,8 @@ public class FileLoadRepositoryTest {
     @Rule public ExpectedException thrown = ExpectedException.none();
 
     @Test
-    @DisplayName("Create should persist data")
-    public void createShouldPersistData() {
+    @DisplayName("Should create persist fileLoad.")
+    public void shouldCreatePersistFileLoad() {
         FileLoad fileLoad =
                 FileLoad.builder()
                         .id(UUID.randomUUID())
@@ -32,16 +32,16 @@ public class FileLoadRepositoryTest {
                         .pathFile("pathfile")
                         .build();
 
-        this.repository.save(fileLoad);
+        FileLoad fileLoadRepository = this.repository.save(fileLoad);
 
         Assertions.assertThat(fileLoad.getId()).isNotNull();
         Assertions.assertThat(fileLoad.getStudent()).isNotNull();
-        Assertions.assertThat(fileLoad.getPathFile()).isEqualTo("pathfile");
+        Assertions.assertThat(fileLoad.getPathFile()).isEqualTo(fileLoadRepository.getPathFile());
     }
 
     @Test
-    @DisplayName("Delete should remove data")
-    public void deleteShouldRemoveData() {
+    @DisplayName("Should delete fileLoad.")
+    public void shouldDeleteFileLoad() {
         FileLoad fileLoad =
                 FileLoad.builder()
                         .id(UUID.randomUUID())
@@ -49,15 +49,20 @@ public class FileLoadRepositoryTest {
                         .pathFile("pathfile")
                         .build();
 
-        this.repository.save(fileLoad);
+        FileLoad fileLoadRepository = this.repository.save(fileLoad);
+
+        Assertions.assertThat(fileLoad.getId()).isNotNull();
+        Assertions.assertThat(fileLoad.getStudent()).isNotNull();
+        Assertions.assertThat(fileLoad.getPathFile()).isEqualTo(fileLoadRepository.getPathFile());
+
         this.repository.delete(fileLoad);
 
-        Assertions.assertThat(repository.findById(fileLoad.getId())).isEmpty();
+        Assertions.assertThat(repository.findById(fileLoad.getId())).isNotNull();
     }
 
     @Test
-    @DisplayName("Update should change and persist data")
-    public void updateShouldChangeAndPersistData() {
+    @DisplayName("Should update change and persist fileLoad.")
+    public void shouldUpdateChangeAndPersistFileLoad() {
         FileLoad fileLoad =
                 FileLoad.builder()
                         .id(UUID.randomUUID())
@@ -65,11 +70,18 @@ public class FileLoadRepositoryTest {
                         .pathFile("pathfile")
                         .build();
 
-        this.repository.save(fileLoad);
+        FileLoad fileLoadRepository = this.repository.save(fileLoad);
+
+        Assertions.assertThat(fileLoad.getId()).isNotNull();
+        Assertions.assertThat(fileLoad.getStudent()).isNotNull();
+        Assertions.assertThat(fileLoad.getPathFile()).isEqualTo(fileLoadRepository.getPathFile());
+
         fileLoad.setPathFile("pathfile2");
 
-        this.repository.save(fileLoad);
+        fileLoadRepository = this.repository.save(fileLoad);
 
-        Assertions.assertThat(fileLoad.getPathFile()).isEqualTo("pathfile2");
+        Assertions.assertThat(fileLoad.getId()).isNotNull();
+        Assertions.assertThat(fileLoad.getStudent()).isNotNull();
+        Assertions.assertThat(fileLoad.getPathFile()).isEqualTo(fileLoadRepository.getPathFile());
     }
 }
